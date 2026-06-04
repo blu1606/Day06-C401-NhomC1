@@ -1,0 +1,221 @@
+
+{
+  "eval_suite_name": "ai_tutor_eval_suite_lab3_style",
+  "version": "1.0",
+  "use_case": "AI Tutor ho tro hoc vien AI20K tra cuu workshop slides co citation",
+
+  "evaluation_groups": {
+    "chatbot_wins": {
+      "description": "Simple one-turn QA. Chatbot baseline co the tra loi nhanh khong can planning phuc tap."
+    },
+    "agent_wins": {
+      "description": "Can retrieval + grounding + multi-step reasoning + citation."
+    },
+    "edge_case": {
+      "description": "Test ambiguity, missing context, hoac graceful failure."
+    }
+  },
+
+  "eval_cases": [
+
+    {
+      "id": "CB-001",
+      "group": "chatbot_wins",
+
+      "user_query": "RAG la gi?",
+
+      "dataset_sources": [
+        "SRC-W08-S002"
+      ],
+
+      "expected_trace": {
+        "reasoning_quality": "Nhan dien day la cau hoi dinh nghia co ban.",
+        "tool_selection": "Chi can retrieval mot source lien quan.",
+        "argument_correctness": {
+          "query_type": "semantic_search",
+          "expected_keywords": ["RAG", "grounded answer"]
+        },
+        "stopping_optimality": "Dung sau 1 retrieval.",
+        "answer_grounding": "Tra loi phai grounded theo source_excerpt."
+      },
+
+      "expected_answer_contains": [
+        "retrieve relevant context",
+        "generate grounded answer"
+      ],
+
+      "expected_citation": "Workshop 8 - RAG Pipeline, slide 2, RAG la gi",
+
+      "failure_conditions": [
+        "Hallucination",
+        "Khong co citation",
+        "Tra loi ngoai workshop"
+      ]
+    },
+
+    {
+      "id": "CB-002",
+      "group": "chatbot_wins",
+
+      "user_query": "Build slice la gi?",
+
+      "dataset_sources": [
+        "SRC-W02-S007"
+      ],
+
+      "expected_trace": {
+        "reasoning_quality": "Nhan dien cau hoi khai niem MVP.",
+        "tool_selection": "Retrieve mot slide duy nhat.",
+        "argument_correctness": {
+          "expected_keywords": [
+            "mot user",
+            "mot task",
+            "mot AI decision",
+            "mot output"
+          ]
+        },
+        "stopping_optimality": "Khong retrieve them source khong can thiet.",
+        "answer_grounding": "Tra loi trung voi source_excerpt."
+      },
+
+      "expected_answer_contains": [
+        "mot user",
+        "mot task",
+        "mot AI decision",
+        "mot output",
+        "khong build ca app"
+      ],
+
+      "expected_citation": "Workshop 2 - Problem to MVP Canvas, slide 7, Build slice",
+
+      "failure_conditions": [
+        "Generic MVP answer",
+        "No citation"
+      ]
+    },
+
+    {
+      "id": "AG-001",
+      "group": "agent_wins",
+
+      "user_query": "Chunking anh huong retrieval quality nhu the nao va vi sao AI tutor can metadata?",
+
+      "dataset_sources": [
+        "SRC-W08-S005",
+        "SRC-W08-S002"
+      ],
+
+      "expected_trace": {
+        "reasoning_quality": "Can combine retrieval quality + grounded answering.",
+        "tool_selection": "Retrieve nhieu sources lien quan.",
+        "argument_correctness": {
+          "expected_keywords": [
+            "chunk qua ngan",
+            "chunk qua dai",
+            "metadata",
+            "grounded answer"
+          ]
+        },
+        "stopping_optimality": "Dung sau khi da tong hop du context.",
+        "answer_grounding": "Moi y phai map ve source."
+      },
+
+      "expected_answer_contains": [
+        "chunk qua ngan co the mat ngu canh",
+        "chunk qua dai lam retrieval kem chinh xac",
+        "metadata giup cite nguon",
+        "RAG tao grounded answer"
+      ],
+
+      "expected_citations": [
+        "Workshop 8 - RAG Pipeline, slide 5, Chunking va retrieval quality",
+        "Workshop 8 - RAG Pipeline, slide 2, RAG la gi"
+      ],
+
+      "failure_conditions": [
+        "Chi retrieve 1 source",
+        "Khong tong hop context",
+        "Hallucination"
+      ]
+    },
+
+    {
+      "id": "AG-002",
+      "group": "agent_wins",
+
+      "user_query": "Neu team bi ket khi build RAG pipeline thi nen hoi o dau va giai doan nao nen tap trung build core?",
+
+      "dataset_sources": [
+        "SRC-W01-S004",
+        "SRC-W01-S006"
+      ],
+
+      "expected_trace": {
+        "reasoning_quality": "Can ket hop support workflow va sprint phases.",
+        "tool_selection": "Retrieve 2 workshop slides.",
+        "argument_correctness": {
+          "expected_keywords": [
+            "office hours",
+            "mentoring duty",
+            "tuan 1-3",
+            "build core"
+          ]
+        },
+        "stopping_optimality": "Dung sau khi tong hop du support + phase info.",
+        "answer_grounding": "Tat ca thong tin phai den tu dataset."
+      },
+
+      "expected_answer_contains": [
+        "Office Hours",
+        "Mentoring Duty",
+        "GD1 - Tuan 1-3",
+        "build nen tang cot loi"
+      ],
+
+      "expected_citations": [
+        "Workshop 1 - Kick-off, slide 4, Quy mo va nhip van hanh",
+        "Workshop 1 - Kick-off, slide 6, Hai giai doan chinh"
+      ],
+
+      "failure_conditions": [
+        "Invented mentoring process",
+        "Missing citation",
+        "Wrong sprint timeline"
+      ]
+    },
+
+    {
+      "id": "EDGE-001",
+      "group": "edge_case",
+
+      "user_query": "Giai thich ky hon phan do di",
+
+      "dataset_sources": [],
+
+      "expected_trace": {
+        "reasoning_quality": "Nhan dien query mo ho, thieu context.",
+        "tool_selection": "Khong retrieve ngay.",
+        "argument_correctness": {
+          "clarification_required": true
+        },
+        "stopping_optimality": "Dung va hoi lai user thay vi hallucinate.",
+        "answer_grounding": "Khong duoc tu doan topic."
+      },
+
+      "expected_answer_contains": [
+        "Ban dang noi den phan nao?",
+        "RAG",
+        "chunking",
+        "build slice"
+      ],
+
+      "failure_conditions": [
+        "Hallucination",
+        "Tu assume context",
+        "Tra loi sai topic"
+      ]
+    }
+
+  ]
+}
+
