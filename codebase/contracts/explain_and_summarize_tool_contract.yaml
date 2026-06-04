@@ -1,0 +1,28 @@
+# GapTutor Tool Contract - Explain and Summarize Tools
+# Đặc tả danh mục tham số gọi công cụ (Tool Calls) cho Explain và Summarize Tools.
+
+version: "1.0"
+contract_type: "agent_tools"
+
+tools:
+  explain:
+    description: "Giải thích nội dung cho người dùng."
+    input_payload:
+      content:
+        type: string
+        required: true
+    output_payload:
+      explanation:
+        type: string
+        description: "Giải thích chi tiết về nội dung đã cho."
+
+  summarize:
+    description: "Tóm tắt nội dung cho người dùng."
+    input_payload:
+      content:
+        type: string
+        required: true
+    output_payload:
+      summary:
+        type: string
+        description: "Tóm tắt ngắn gọn về nội dung đã cho."
