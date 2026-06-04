@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Báo Cáo Hoan Chinh Phân Tích Cấu Trúc Sản Phẩm AI: V-APP</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .header-banner {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 35px;
+        }
+        h1 {
+            font-size: 22pt;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .meta-info {
+            font-size: 11pt;
+            opacity: 0.9;
+            font-style: italic;
+        }
+        h2 {
+            font-size: 15pt;
+            color: #1e293b;
+            border-left: 5px solid #2563eb;
+            padding-left: 12px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            font-size: 12pt;
+            color: #2563eb;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+        p, li {
+            font-size: 11pt;
+            color: #475569;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .highlight-box {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e2e8f0;
+        }
+        .evidence-box {
+            background-color: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-left: 5px solid #f97316;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .evidence-box p {
+            margin: 8px 0;
+        }
+        .stuck-box {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #991b1b;
+            font-size: 10.5pt;
+            border-radius: 0 8px 8px 0;
+        }
+        .decision-box {
+            background-color: #eff6ff;
+            border: 1px dashed #2563eb;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 40px;
+        }
+        .decision-title {
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 10pt;
+            letter-spacing: 1px;
+        }
+        blockquote {
+            margin: 0;
+            font-size: 11.5pt;
+            color: #1e3a8a;
+            font-style: italic;
+            line-height: 1.7;
+        }
+        .diagram-container {
+            text-align: center;
+            background-color: #fafafa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .diagram-title {
+            font-size: 10pt;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .flow-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+        .flow-table th, .flow-table td {
+            border: 1px solid #e2e8f0;
+            padding: 14px;
+            text-align: left;
+            font-size: 10.5pt;
+        }
+        .flow-table th {
+            background-color: #f8fafc;
+            color: #334155;
+            font-weight: 600;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 8.5pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-happy { background-color: #dcfce7; color: #14532d; }
+        .badge-low { background-color: #fef9c3; color: #713f12; }
+        .badge-fail { background-color: #fee2e2; color: #701a1a; }
+        .badge-correct { background-color: #e0f2fe; color: #0c4a6e; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-banner">
+        <h1>Mổ sản phẩm AI thật: V-APP (V-AI)</h1>
+        <div class="meta-info">Workshop Cá Nhân — Báo Cáo Hoàn Chỉnh Hệ Thống Luồng Tương Tác & Sơ Đồ Điểm Gãy</div>
+    </div>
+
+    <!-- PHẦN 1: CHỌN SẢN PHẨM -->
+    <h2>1. Chọn Sản Phẩm Để Dùng Thử</h2>
+    <p><strong>Sản phẩm:</strong> V-App — V-AI.</p>
+    <p><strong>AI feature:</strong> Trợ lý voice/text, gợi ý theo ngữ cảnh và hỗ trợ điều hướng tác vụ trong app.</p>
+    <p><strong>Cách truy cập:</strong> Mở V-App, sử dụng trợ lý V-AI bằng câu lệnh text.</p>
+
+    <!-- PHẦN 2: DÙNG THỬ -->
+    <h2>2. Dùng Thử: Promise vs. Reality</h2>
+    <p><strong>Product hứa gì?</strong> V-AI được kỳ vọng hoạt động như một trợ lý ảo thông minh, hiểu ngữ cảnh và giúp user đi nhanh đến hành động cần làm, ví dụ mở đúng mini-app, tìm lịch học hoặc gợi ý bước tiếp theo.</p>
+    <p><strong>User nào được hứa sẽ được giúp?</strong> Người dùng V-App cần thao tác nhanh bằng voice/text, đặc biệt là sinh viên hoặc người dùng có nhiều dịch vụ nằm trong cùng hệ sinh thái app.</p>
+    <p><strong>Kỳ vọng AI làm được task nào?</strong> Khi user hỏi lịch học ngày mai, AI nên nhận diện intent "xem lịch", hỏi lại thông tin còn thiếu nếu chưa chắc, rồi mở đúng mini-app hoặc đưa nút hành động rõ ràng.</p>
+    
+    <h3>Các Query thực tế đã thử nghiệm:</h3>
+    <ul>
+        <li><strong>Query 1:</strong> <em>"Đặt vé máy bay rẻ nhất ngày mai"</em></li>
+        <li><strong>Query 2:</strong> <em>"Xem lịch học ngày mai"</em></li>
+        <li><strong>Query 3:</strong> <em>"Lịch học ngày mai của tôi tại VinUni"</em></li>
+    </ul>
+
+    <h3>Evidence ghi nhận được:</h3>
+    <div class="evidence-box">
+        <p><strong>Prompt/Input đã thử:</strong> <em>"Xem lịch học ngày mai"</em>.</p>
+        <p><strong>Observation:</strong> V-AI không hỏi lại user học ở trường/cơ sở nào và cũng không đưa ngay nút mở mini-app lịch học. Thay vào đó, phản hồi chuyển sang dạng văn bản dài, có nhiều thông tin ngoài nhu cầu chính như hướng dẫn chung, thông tin thời tiết hoặc cảnh báo không liên quan.</p>
+        <p><strong>Quote mô phỏng từ phản hồi:</strong> <em>"Bạn có thể kiểm tra lịch học qua hệ thống của trường hoặc các kênh thông báo chính thức..."</em></p>
+        <p><strong>Bằng chứng hành vi:</strong> User phải tự đọc một đoạn trả lời dài và cuộn màn hình để tìm nút hành động. Điều này cho thấy AI nhận ra chủ đề "lịch học" nhưng chưa biến intent đó thành hành động trực tiếp.</p>
+    </div>
+
+    <h3>Khi dùng thật, điểm gãy xuất hiện ở đâu?</h3>
+    <div class="highlight-box">
+        <strong>Kỳ vọng (Expectation):</strong> AI xử lý thông tin tinh gọn, trích xuất intent hoặc hỏi lại thông số còn thiếu, ví dụ tên trường/cơ sở, rồi gọi mini-app hoặc hiển thị nhanh giao diện cấu hình tác vụ.
+        <br><br>
+        <strong>Thực tế (Reality):</strong> 
+        <ul>
+            <li><strong>Intent chưa đủ chắc nhưng không hỏi lại:</strong> Query "Xem lịch học ngày mai" còn thiếu ngữ cảnh trường/cơ sở, nhưng AI không mở low-confidence path để hỏi lại.</li>
+            <li><strong>Quá tải nhận thức (Cognitive Overload):</strong> AI trả về khối văn bản dài, làm user phải đọc và tự suy luận bước tiếp theo thay vì nhận một lựa chọn hành động rõ ràng.</li>
+            <li><strong>Handoff bị trễ:</strong> Nút mở mini-app hoặc hướng đi hành động không xuất hiện đủ sớm, khiến user dễ nghĩ rằng AI chỉ trả lời chung chung.</li>
+        </ul>
+    </div>
+
+    <!-- PHẦN 2: VẼ FLOW -->
+    <h2>3. Vẽ 4 Paths</h2>
+    <p>Bảng 4 paths dựa trên dữ liệu thử nghiệm V-App:</p>
+
+    <table class="flow-table">
+        <thead>
+            <tr>
+                <th style="width: 8%;">Bước</th>
+                <th style="width: 25%;">Hành động của User</th>
+                <th style="width: 47%;">Phản hồi từ V-AI</th>
+                <th style="width: 20%;">Trạng thái Luồng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Nhập: <em>"Đặt vé máy bay rẻ nhất..."</em></td>
+                <td>AI hiểu chủ đề đặt vé nhưng thiếu điểm đi/đến, giờ bay và ngân sách; phản hồi còn thiên về gợi ý chung.</td>
+                <td><span class="badge badge-low">Low-confidence</span></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Đổi hướng: <em>"Xem lịch học ngày mai"</em></td>
+                <td>AI trả lời dạng văn bản dài và không hỏi lại user muốn xem lịch ở trường/cơ sở nào.</td>
+                <td><span class="badge badge-fail">Failure</span></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Sửa đổi: <em>"Lịch học ngày mai tại VinUni"</em></td>
+                <td>AI đã có thêm ngữ cảnh VinUni nhưng vẫn ưu tiên hướng dẫn dài thay vì mở thẳng điểm đến phù hợp.</td>
+                <td><span class="badge badge-correct">Correction</span></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Cuộn hết màn hình xuống đáy</td>
+                <td>User mới thấy nút bấm hoặc hướng đi hành động sau khi đã đọc nhiều nội dung.</td>
+                <td><span class="badge badge-happy">Happy (Muộn màng)</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="stuck-box">
+        <strong>[VỊ TRÍ USER BỊ KẸT]:</strong> Người dùng bị kẹt tại bước văn bản dài (Bước 2 & 3). Do AI không hỏi lại khi thiếu ngữ cảnh và không đưa nút hành động đủ sớm, user có xu hướng nghĩ rằng V-AI chỉ trả lời chung chung thay vì hỗ trợ workflow thật.
+    </div>
+
+    <div class="diagram-container">
+        <div class="diagram-title">Sơ đồ luồng hiện tại (As-is Flow Diagram) và Điểm gãy trải nghiệm</div>
+        <!-- SƠ ĐỒ SVG AS-IS -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 240" width="100%" height="100%">
+            <!-- Giao diện phong cách chuyên nghiệp -->
+            <g transform="translate(10, 20)">
+                <!-- Khối 1: User Query -->
+                <rect x="0" y="40" width="160" height="60" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+                <text x="80" y="70" font-size="11" font-weight="bold" fill="#1e3a8a" text-anchor="middle">User Query</text>
+                <text x="80" y="86" font-size="9" fill="#2563eb" text-anchor="middle">"Xem lịch học ngày mai"</text>
+                
+                <!-- Mũi tên 1 -->
+                <path d="M 160 70 L 210 70" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+                
+                <!-- Khối 2: AI Response -->
+                <rect x="210" y="25" width="200" height="90" rx="6" fill="#fff5f5" stroke="#f87171" stroke-width="2"/>
+                <text x="310" y="45" font-size="11" font-weight="bold" fill="#991b1b" text-anchor="middle">V-AI Trả Lời Dài</text>
+                <text x="310" y="65" font-size="9" fill="#dc2626" text-anchor="middle">• Không hỏi lại khi thiếu ngữ cảnh</text>
+                <text x="310" y="80" font-size="9" fill="#dc2626" text-anchor="middle">• Sớ chữ dài (Cognitive Overload)</text>
+                <text x="310" y="95" font-size="9" fill="#dc2626" text-anchor="middle">• Hướng dẫn thay vì mở hành động</text>
+
+                <!-- Mũi tên 2 (Điểm kẹt) -->
+                <path d="M 410 70 L 470 70" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow-red)"/>
+                
+                <!-- Khối 3: Điểm kẹt -->
+                <rect x="470" y="35" width="140" height="70" rx="6" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+                <circle cx="470" cy="35" r="10" fill="#ef4444"/>
+                <text x="470" y="39" font-size="10" font-weight="bold" fill="white" text-anchor="middle">!</text>
+                <text x="540" y="65" font-size="11" font-weight="bold" fill="#991b1b" text-anchor="middle">USER BỊ KẸT</text>
+                <text x="540" y="85" font-size="9" fill="#7f1d1d" text-anchor="middle">Muốn bỏ cuộc / Thoát app</text>
+
+                <!-- Mũi tên 3 -->
+                <path d="M 610 70 L 660 70" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                <!-- Khối 4: Happy path bị ẩn -->
+                <rect x="660" y="40" width="120" height="60" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1"/>
+                <text x="720" y="65" font-size="10" font-weight="bold" fill="#475569" text-anchor="middle">Nút Kích Hoạt</text>
+                <text x="720" y="80" font-size="9" fill="#64748b" text-anchor="middle">(Bị ẩn ở đáy màn hình)</text>
+            </g>
+            
+            <!-- Định nghĩa các đầu mũi tên -->
+            <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#94a3b8" />
+                </marker>
+                <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#ef4444" />
+                </marker>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- PHẦN 3: SỬA MỘT PATH YẾU NHẤT -->
+    <h2>4. Sketch As-is / To-be</h2>
+    <p><strong>Chiến lược tối ưu thiết kế (AI UX Pattern):</strong> Loại bỏ toàn bộ các khối văn bản rác. Sử dụng mô hình <strong>Hỏi lại chủ động (Clarification)</strong> kết hợp <strong>Nút bấm phản hồi nhanh (Quick Replies)</strong> và thực hiện <strong>Chuyển giao tác vụ (Handoff)</strong> trực tiếp đến cấu trúc Mini-app.</p>
+
+    <div class="highlight-box">
+        <h3>Chi tiết luồng To-be:</h3>
+        <ol>
+            <li><strong>Nhận diện Ý định (Intent):</strong> Khi user nhập <em>"Xem lịch học ngày mai"</em>, AI phân tích lịch sử/ngữ cảnh dữ liệu để biết người dùng đang có hai luồng thông tin: ĐH Khoa học Tự nhiên (HUS) và VinUni.</li>
+            <li><strong>Hỏi lại tinh gọn (Clarification):</strong> AI phản hồi bằng một câu thoại tối giản: <em>"Bạn muốn kiểm tra lịch học tại cơ sở nào ngày mai (04/06/2026)?"</em></li>
+            <li><strong>Tương tác dạng Nút (Button UI):</strong> Hiển thị ngay lập tức các thẻ chọn nhanh: <code>[ Đại học VinUni ]</code> và <code>[ ĐH Khoa học Tự nhiên ]</code>.</li>
+            <li><strong>Chuyển giao tức thì (Direct Handoff):</strong> User click chọn <code>[ Đại học VinUni ]</code> -> AI mở hoặc đẩy ra thẻ liên kết hành động <strong>[Mở Mini-app VinUni]</strong> trực diện, loại bỏ 100% thời gian đọc văn bản hướng dẫn thủ công.</li>
+        </ol>
+    </div>
+
+    <div class="diagram-container">
+        <div class="diagram-title">Sơ đồ luồng tối ưu đề xuất (To-be Flow Diagram)</div>
+        <!-- SƠ ĐỒ SVG TO-BE -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 180" width="100%" height="100%">
+            <g transform="translate(10, 20)">
+                <!-- Khối 1: User Query -->
+                <rect x="0" y="30" width="150" height="50" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+                <text x="75" y="55" font-size="11" font-weight="bold" fill="#1e3a8a" text-anchor="middle">User Query</text>
+                <text x="75" y="70" font-size="9" fill="#2563eb" text-anchor="middle">"Xem lịch học ngày mai"</text>
+
+                <!-- Mũi tên 1 -->
+                <path d="M 150 55 L 200 55" fill="none" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+                <!-- Khối 2: AI Hỏi lại siêu ngắn -->
+                <rect x="200" y="25" width="190" height="60" rx="6" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/>
+                <text x="295" y="45" font-size="11" font-weight="bold" fill="#14532d" text-anchor="middle">AI Hỏi Lại Ngắn Gọn</text>
+                <text x="295" y="62" font-size="9" fill="#16a34a" text-anchor="middle">"Bạn muốn xem lịch ở trường nào?"</text>
+
+                <!-- Mũi tên 2 -->
+                <path d="M 390 55 L 440 55" fill="none" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+                <!-- Khối 3: Quick Reply Buttons -->
+                <rect x="440" y="20" width="160" height="70" rx="6" fill="#f0fdfa" stroke="#0d9488" stroke-width="2"/>
+                <text x="520" y="40" font-size="10" font-weight="bold" fill="#115e59" text-anchor="middle">Quick Reply Buttons</text>
+                <!-- Giả lập button inside -->
+                <rect x="450" y="50" width="65" height="18" rx="3" fill="#0d9488"/>
+                <text x="482" y="62" font-size="8" fill="white" font-weight="bold" text-anchor="middle">VinUni</text>
+                <rect x="525" y="50" width="65" height="18" rx="3" fill="#0d9488"/>
+                <text x="557" y="62" font-size="8" fill="white" font-weight="bold" text-anchor="middle">HUS</text>
+
+                <!-- Mũi tên 3 -->
+                <path d="M 600 55 L 650 55" fill="none" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+                <!-- Khối 4: Direct Handoff -->
+                <rect x="650" y="30" width="130" height="50" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                <text x="715" y="52" font-size="10" font-weight="bold" fill="#14532d" text-anchor="middle">Direct Handoff</text>
+                <text x="715" y="67" font-size="9" fill="#16a34a" text-anchor="middle">[Mở Mini-app ngay]</text>
+            </g>
+            <defs>
+                <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#4ade80" />
+                </marker>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- PHẦN 4: PRODUCT DECISION & SPEC IMPACT -->
+    <div class="decision-box">
+        <div class="decision-title">5. Finding Thành Quyết Định Sản Phẩm</div>
+        <blockquote>
+            Khi user nhập query <em>"Xem lịch học ngày mai"</em>, V-AI hiểu chủ đề chung nhưng không hỏi lại ngữ cảnh còn thiếu và trả lời bằng đoạn văn bản dài, hậu quả là user phải tự đọc, tự tìm hướng thao tác và có thể rời app trước khi thấy nút hành động. Lỗi thuộc layer <strong>Intent & UX Recovery</strong>.
+            <br><br>
+            <strong>Quyết định:</strong> Với các query điều hướng như lịch học, đặt vé hoặc mở dịch vụ, V-AI không nên trả lời bằng văn bản dài trước. AI cần hỏi lại một câu ngắn khi thiếu thông tin, hiển thị quick replies và đưa nút handoff trực tiếp sang mini-app tương ứng.
+        </blockquote>
+        <div class="decision-title" style="margin-top: 20px;">6. Thay Đổi Trong SPEC (SPEC Impact)</div>
+        <p style="margin: 0; font-size: 11pt; color: #1e3a8a; font-style: italic;">
+            Finding này sẽ thay đổi SPEC bằng cách: thêm requirement cho low-confidence path, giới hạn độ dài câu trả lời đầu tiên, bắt buộc hiển thị quick replies khi thiếu ngữ cảnh, và bổ sung handoff button để user mở đúng mini-app ngay trong 1-2 bước.
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

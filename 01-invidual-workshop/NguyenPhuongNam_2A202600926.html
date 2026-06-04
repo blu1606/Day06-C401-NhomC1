@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEO Analysis – Vietnam Airlines</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vn-blue: #003F8A;
+    --vn-gold: #C9A84C;
+    --vn-red: #E8233A;
+    --bg: #F5F3EE;
+    --surface: #FFFFFF;
+    --text: #1A1A2E;
+    --muted: #6B6B7B;
+    --border: #E0DDD5;
+    --happy: #0F6E56;
+    --happy-bg: #E1F5EE;
+    --warn: #854F0B;
+    --warn-bg: #FAEEDA;
+    --fail: #A32D2D;
+    --fail-bg: #FCEBEB;
+    --fix: #3C3489;
+    --fix-bg: #EEEDFE;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--vn-blue);
+    color: white;
+    padding: 3rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    border: 40px solid rgba(201,168,76,0.15);
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 10%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 30px solid rgba(255,255,255,0.06);
+  }
+
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--vn-gold);
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 1.2rem;
+  }
+
+  header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.8rem;
+  }
+
+  header h1 span { color: var(--vn-gold); }
+
+  .header-sub {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.95rem;
+    font-weight: 300;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 1.2rem;
+  }
+
+  .header-sub span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--vn-gold);
+    display: inline-block;
+  }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  /* ── SECTION ── */
+  section {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--vn-blue);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.2rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--vn-blue);
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+    line-height: 1.3;
+  }
+
+  /* ── PROMISE BOX ── */
+  .promise-box {
+    background: var(--vn-blue);
+    color: white;
+    border-radius: 12px;
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .promise-icon {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+  }
+
+  .promise-box h3 {
+    font-size: 0.8rem;
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--vn-gold);
+    margin-bottom: 0.4rem;
+  }
+
+  .promise-box p {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.5;
+  }
+
+  /* ── QUERY TABLE ── */
+  .query-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .query-table thead tr {
+    background: var(--vn-blue);
+    color: white;
+  }
+
+  .query-table thead th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+  }
+
+  .query-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .query-table tbody tr:last-child { border-bottom: none; }
+  .query-table tbody tr:hover { background: #FAFAF8; }
+
+  .query-table td {
+    padding: 0.9rem 1rem;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .query-table td:first-child {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--vn-blue);
+    background: #F0F4FA;
+    width: 34%;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .badge-ok { background: var(--happy-bg); color: var(--happy); }
+  .badge-warn { background: var(--warn-bg); color: var(--warn); }
+  .badge-fail { background: var(--fail-bg); color: var(--fail); }
+
+  /* ── FLOW ── */
+  .flow-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .flow-node {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  .flow-node:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 40px;
+    width: 2px;
+    height: calc(100% - 8px);
+    background: var(--border);
+  }
+
+  .flow-dot {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    border: 2px solid transparent;
+  }
+
+  .flow-dot.happy { background: var(--happy-bg); border-color: var(--happy); }
+  .flow-dot.warn  { background: var(--warn-bg);  border-color: var(--warn); }
+  .flow-dot.fail  { background: var(--fail-bg);  border-color: var(--fail); }
+  .flow-dot.fix   { background: var(--fix-bg);   border-color: var(--fix); }
+  .flow-dot.drop  { background: #fff0f0; border-color: var(--vn-red); }
+
+  .flow-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    flex: 1;
+    margin-bottom: 0.7rem;
+  }
+
+  .flow-content.kep {
+    border-color: var(--fail);
+    border-width: 1.5px;
+    border-style: dashed;
+  }
+
+  .flow-title {
+    font-weight: 600;
+    font-size: 0.92rem;
+    margin-bottom: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .flow-sub {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .kep-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--fail);
+    background: var(--fail-bg);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── BRANCH ── */
+  .flow-branch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-left: 50px;
+    margin-bottom: 0.7rem;
+  }
+
+  .branch-card {
+    background: var(--surface);
+    border: 1.5px dashed var(--fail);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+  }
+
+  .branch-card .flow-title { font-size: 0.85rem; }
+  .branch-card .flow-sub { font-size: 0.8rem; }
+
+  /* ── TO-BE GRID ── */
+  .tobe-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .tobe-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    border-top: 3px solid var(--vn-blue);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .tobe-card:hover {
+    box-shadow: 0 4px 20px rgba(0,63,138,0.1);
+    transform: translateY(-2px);
+  }
+
+  .tobe-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--vn-blue);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .tobe-card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .tobe-card p {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .tobe-card.gold { border-top-color: var(--vn-gold); }
+  .tobe-card.green { border-top-color: var(--happy); }
+  .tobe-card.purple { border-top-color: #534AB7; }
+  .tobe-card.red { border-top-color: var(--fail); }
+  .tobe-card.span2 { grid-column: 1 / -1; border-top-color: var(--vn-gold); background: #FFFDF5; }
+
+  /* ── RESULT TABLE ── */
+  .result-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.87rem;
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-top: 1rem;
+  }
+
+  .result-table thead tr { background: #F5F3EE; }
+  .result-table thead th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .result-table tbody tr { border-bottom: 1px solid var(--border); }
+  .result-table tbody tr:last-child { border-bottom: none; }
+
+  .result-table td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+  }
+
+  .result-table td:first-child { font-weight: 600; color: var(--text); }
+
+  .before { color: var(--fail); font-size: 0.82rem; }
+  .after  { color: var(--happy); font-size: 0.82rem; font-weight: 600; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--vn-blue);
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.78rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  footer span { color: var(--vn-gold); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  section {
+    animation: fadeUp 0.5s ease both;
+  }
+
+  section:nth-child(1) { animation-delay: 0.05s; }
+  section:nth-child(2) { animation-delay: 0.15s; }
+  section:nth-child(3) { animation-delay: 0.25s; }
+  section:nth-child(4) { animation-delay: 0.35s; }
+
+  @media (max-width: 600px) {
+    .tobe-grid { grid-template-columns: 1fr; }
+    .tobe-card.span2 { grid-column: 1; }
+    .flow-branch { grid-template-columns: 1fr; margin-left: 0; }
+    .query-table td:first-child { width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="tag">Mổ sản phẩm AI thật · app → flow → path yếu → sửa</div>
+    <h1>NEO – <span>Vietnam Airlines</span></h1>
+    <p style="color:rgba(255,255,255,0.7); font-size:1rem; margin-top:0.5rem; font-weight:300;">
+      Chatbot hỗ trợ thông tin chuyến bay, vé, hành lý &amp; khiếu nại trong app
+    </p>
+    <div class="header-sub">
+      <span><span class="dot"></span> Bước 1: Dùng thử</span>
+      <span><span class="dot"></span> Bước 2: Vẽ flow as-is</span>
+      <span><span class="dot"></span> Bước 3: Sửa path yếu nhất</span>
+      <span><span class="dot"></span> 40 phút</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- STEP 1 -->
+  <section>
+    <div class="section-label">
+      <span class="step-num">1</span>
+      Dùng thử NEO
+    </div>
+
+    <div class="promise-box">
+      <div class="promise-icon">✈️</div>
+      <div>
+        <h3>Promise của sản phẩm</h3>
+        <p>Trợ lý ảo NEO trong app Vietnam Airlines hỗ trợ tra cứu chuyến bay, đặt / đổi / hủy vé, hành lý, check-in và tiếp nhận khiếu nại — tất cả trong một giao diện chat.</p>
+      </div>
+    </div>
+
+    <h2>Các query thử nghiệm &amp; kết quả</h2>
+    <table class="query-table">
+      <thead>
+        <tr>
+          <th>Query thử</th>
+          <th>Kỳ vọng</th>
+          <th>Thực tế</th>
+          <th>Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>"Chuyến VN214 ngày mai còn chỗ không?"</td>
+          <td>Trạng thái chỗ ngồi real-time</td>
+          <td>Trả lời chung chung, không có dữ liệu live</td>
+          <td><span class="badge badge-warn">Low-conf</span></td>
+        </tr>
+        <tr>
+          <td>"Tôi muốn đổi VN123 sang ngày 20"</td>
+          <td>Xử lý đổi vé ngay trong app</td>
+          <td>Đưa link / hotline, không thực thi được</td>
+          <td><span class="badge badge-fail">Failure</span></td>
+        </tr>
+        <tr>
+          <td>"Hành lý bị mất ở Đà Nẵng, tôi làm gì?"</td>
+          <td>Hướng dẫn + tạo ticket khiếu nại</td>
+          <td>Trả về số hotline 1800 1100</td>
+          <td><span class="badge badge-fail">Failure</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:1rem; padding:1rem 1.2rem; background:#FFF8EC; border-left:3px solid var(--vn-gold); border-radius:0 8px 8px 0; font-size:0.85rem; color:var(--warn);">
+      <strong>Điểm gãy chính:</strong> NEO chỉ mạnh ở FAQ tĩnh — không thực thi được giao dịch (đổi, hủy, khiếu nại) và không có handoff thông minh khi thất bại.
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section>
+    <div class="section-label">
+      <span class="step-num">2</span>
+      Flow As-is
+    </div>
+
+    <h2>Hành trình user — happy → low-confidence → failure → correction</h2>
+
+    <div class="flow-wrap">
+
+      <div class="flow-node">
+        <div class="flow-dot happy">🙂</div>
+        <div class="flow-content">
+          <div class="flow-title">
+            <span class="badge badge-ok">Happy</span>
+            User mở NEO, gõ câu hỏi
+          </div>
+          <div class="flow-sub">Đọc promise, thử hỏi về lịch bay, chính sách hành lý — NEO trả lời đúng</div>
+        </div>
+      </div>
+
+      <div class="flow-node">
+        <div class="flow-dot happy">✅</div>
+        <div class="flow-content">
+          <div class="flow-title">
+            <span class="badge badge-ok">Happy</span>
+            NEO trả lời chính xác
+          </div>
+          <div class="flow-sub">FAQ tĩnh, chính sách, lịch bay cố định — hoạt động tốt</div>
+        </div>
+      </div>
+
+      <div class="flow-node">
+        <div class="flow-dot warn">🤔</div>
+        <div class="flow-content kep">
+          <div class="flow-title">
+            <span class="badge badge-warn">Low-confidence</span>
+            User hỏi thông tin cụ thể / real-time
+            <span class="kep-label">KẸT 1</span>
+          </div>
+          <div class="flow-sub">"Vé VN214 ngày mai còn chỗ không?" → NEO trả lời mơ hồ, chung chung<br>User không biết có nên tin hay không</div>
+        </div>
+      </div>
+
+      <!-- Branch -->
+      <div class="flow-branch">
+        <div class="branch-card">
+          <div class="flow-title"><span class="badge badge-warn">Low-conf</span> User hỏi lại</div>
+          <div class="flow-sub">Mất thêm 1–2 vòng giao tiếp. Không biết NEO đã hiểu đúng chưa <span class="kep-label">KẸT</span></div>
+        </div>
+        <div class="branch-card">
+          <div class="flow-title"><span class="badge badge-fail">Failure</span> User yêu cầu đổi/hủy vé</div>
+          <div class="flow-sub">NEO hiểu sai intent: "đổi ngày" → "hủy vé". Không có cách sửa ngay <span class="kep-label">KẸT</span></div>
+        </div>
+      </div>
+
+      <div class="flow-node">
+        <div class="flow-dot fail">🚫</div>
+        <div class="flow-content kep">
+          <div class="flow-title">
+            <span class="badge badge-fail">Failure</span>
+            NEO không xử lý được — đẩy ra hotline
+            <span class="kep-label">🔴 KẸT CHÍNH</span>
+          </div>
+          <div class="flow-sub">Trả về: <em>"Gọi hotline 1800 1100"</em> — không lưu context, không có undo, không bridge sang agent</div>
+        </div>
+      </div>
+
+      <div class="flow-node">
+        <div class="flow-dot fix">🔄</div>
+        <div class="flow-content">
+          <div class="flow-title"><span class="badge" style="background:var(--fix-bg);color:var(--fix);">Correction</span> User cố sửa</div>
+          <div class="flow-sub">Phải gõ lại từ đầu — mất hết context. Không có nút "sửa lệnh trước"</div>
+        </div>
+      </div>
+
+      <div class="flow-node">
+        <div class="flow-dot drop">📵</div>
+        <div class="flow-content">
+          <div class="flow-title"><span class="badge badge-fail">Drop-off</span> User bỏ app → gọi hotline</div>
+          <div class="flow-sub">Thoát ra ngoài app hoàn toàn · Chi phí cao · Trải nghiệm gãy</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section>
+    <div class="section-label">
+      <span class="step-num">3</span>
+      Sửa path yếu nhất
+    </div>
+
+    <h2>Path được chọn: <span style="color:var(--fail)">Handoff failure</span></h2>
+
+    <div style="padding:1rem 1.2rem; background:var(--fail-bg); border-left:3px solid var(--fail); border-radius:0 8px 8px 0; font-size:0.87rem; margin-bottom:1.8rem; color:var(--fail);">
+      <strong>Vấn đề:</strong> Khi NEO thất bại, nó chỉ nói "Gọi hotline 1800 1100" — không lưu context, không có undo, không có handoff thông minh. User phải rời app, gọi điện, giải thích lại từ đầu.
+    </div>
+
+    <h2>Đề xuất To-be: Smart Handoff — 5 thành phần</h2>
+
+    <div class="tobe-grid">
+
+      <div class="tobe-card">
+        <div class="tobe-num">① HỎI LẠI</div>
+        <h3>Clarification trước khi hành động</h3>
+        <p>NEO tự xác nhận intent <em>trước khi thực hiện</em> bất kỳ thao tác nào. Hiển thị dưới dạng quick-reply button — không yêu cầu gõ lại.<br><br>
+        <em>"Bạn muốn đổi ngày bay hay hủy và đặt mới?"</em></p>
+      </div>
+
+      <div class="tobe-card gold">
+        <div class="tobe-num" style="color:var(--warn);">② SOURCE</div>
+        <h3>Source tracing minh bạch</h3>
+        <p>Hiển thị NEO lấy thông tin từ đâu: GDS real-time / FAQ tĩnh / CS knowledge base.<br><br>
+        Badge nhỏ: <em>"Nguồn: Lịch bay thực tế · Cập nhật 14:32"</em><br>
+        Giúp user đánh giá độ tin cậy ngay lập tức.</p>
+      </div>
+
+      <div class="tobe-card purple">
+        <div class="tobe-num" style="color:#534AB7;">③ UNDO</div>
+        <h3>Button undo per-step</h3>
+        <p>Mỗi bước trong luồng có nút <strong>← Sửa</strong> riêng biệt. Giữ nguyên context các bước trước, chỉ sửa bước bị lỗi.<br><br>
+        Không yêu cầu user bắt đầu lại cuộc hội thoại.</p>
+      </div>
+
+      <div class="tobe-card red">
+        <div class="tobe-num" style="color:var(--fail);">⑤ CORRECTION LOG</div>
+        <h3>Ghi nhận lỗi để cải thiện</h3>
+        <p>Ghi lại tất cả trường hợp NEO hiểu sai intent. Data này dùng để retrain NLU model, báo cáo pattern lỗi cho product team, và cá nhân hóa theo user.</p>
+      </div>
+
+      <div class="tobe-card span2">
+        <div class="tobe-num" style="color:var(--warn);">④ SMART HANDOFF BOX — THAY THẾ "GỌI HOTLINE"</div>
+        <h3>Bridge thông minh khi NEO không xử lý được</h3>
+        <p style="font-size:0.88rem;">
+          Khi NEO thất bại → hiện Smart Handoff Box với:
+          &nbsp;·&nbsp;<strong>Tóm tắt vấn đề</strong> tự động (NEO tự viết)
+          &nbsp;·&nbsp;<strong>Chọn kênh:</strong> Chat agent in-app / Callback scheduling / Email
+          &nbsp;·&nbsp;<strong>Ước tính thời gian chờ</strong> <em>("Agent available trong ~8 phút")</em>
+          &nbsp;·&nbsp;<strong>Context tự động đính kèm</strong> khi kết nối agent — agent không cần hỏi lại từ đầu.
+        </p>
+      </div>
+
+    </div>
+
+    <h2 style="margin-top:2rem;">Kết quả kỳ vọng</h2>
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Trước</th>
+          <th>Sau</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Drop-off ra ngoài app</td>
+          <td class="before">Cao — xảy ra mỗi handoff failure</td>
+          <td class="after">↓ Giảm đáng kể</td>
+        </tr>
+        <tr>
+          <td>Context truyền sang agent</td>
+          <td class="before">0% — agent hỏi lại từ đầu</td>
+          <td class="after">↑ 100% — tóm tắt tự động</td>
+        </tr>
+        <tr>
+          <td>Thời gian giải quyết vấn đề</td>
+          <td class="before">~15–20 phút (gọi hotline)</td>
+          <td class="after">↓ ~5–8 phút (in-app chat)</td>
+        </tr>
+        <tr>
+          <td>NEO tự cải thiện</td>
+          <td class="before">Không có cơ chế</td>
+          <td class="after">↑ Có — correction log → retrain</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </section>
+
+</main>
+
+<footer>
+  Bài phân tích theo framework &nbsp;<span>app → flow → path yếu → sửa</span>&nbsp; · NEO – Vietnam Airlines · 40 phút
+</footer>
+
+</body>
+</html>

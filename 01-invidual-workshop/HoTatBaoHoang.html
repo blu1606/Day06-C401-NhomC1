@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moni UX Audit Presentation Slides</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            outfit: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            moni: {
+              dark: '#0b0f19',
+              slate: '#121826',
+              purple: '#ab47bc',
+              pink: '#ec407a',
+              orange: '#f57c00',
+              green: '#2e7d32',
+              accent: '#00e676',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(15px);
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .glass {
+      background: rgba(18, 24, 38, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .glow-purple {
+      box-shadow: 0 0 30px rgba(171, 71, 188, 0.15);
+    }
+    .glow-orange {
+      box-shadow: 0 0 30px rgba(245, 124, 0, 0.15);
+    }
+    .glow-green {
+      box-shadow: 0 0 30px rgba(0, 230, 118, 0.15);
+    }
+    /* Simple custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0f19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col justify-between select-none font-sans">
+
+  <!-- TOP PROGRESS BAR -->
+  <div class="w-full h-1.5 bg-slate-900 relative z-50">
+    <div id="progressBar" class="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-emerald-500 transition-all duration-300" style="width: 16.66%;"></div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="w-full px-8 py-4 flex justify-between items-center z-50 border-b border-slate-900 bg-moni-dark/80 backdrop-blur-md">
+    <div class="flex items-center space-x-3">
+      <!-- Moni Logo Style Head -->
+      <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-moni-purple to-moni-pink flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
+        <span class="font-outfit font-extrabold text-sm">M</span>
+      </div>
+      <div>
+        <h1 class="font-outfit font-bold text-base tracking-wide text-white">MONI UX AUDIT</h1>
+        <p class="text-xs text-slate-400">Teardown & Re-design Proposal</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <span id="slideIndex" class="font-outfit text-sm text-slate-400 font-bold bg-slate-950 px-3 py-1 rounded-full border border-slate-800">Slide 1 / 6</span>
+    </div>
+  </header>
+
+  <!-- SLIDES MAIN CONTAINER -->
+  <main class="flex-grow w-full relative overflow-hidden flex items-center justify-center p-4 md:p-8">
+
+    <!-- SLIDE 1: COVER -->
+    <section id="slide-1" class="slide active flex flex-col justify-center items-center text-center space-y-6">
+      <div class="relative max-w-4xl p-12 rounded-3xl glass glow-purple flex flex-col items-center space-y-6 animate-fade-in">
+        <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-moni-purple to-moni-pink flex items-center justify-center text-white shadow-2xl shadow-purple-500/30 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div class="space-y-3">
+          <span class="text-xs font-semibold tracking-widest text-moni-pink uppercase bg-pink-500/10 px-3.5 py-1.5 rounded-full border border-pink-500/20">Báo cáo Trải nghiệm & Thiết kế</span>
+          <h2 class="font-outfit font-extrabold text-4xl md:text-5xl text-white tracking-tight leading-none pt-2">
+            UX Audit & Re-design:<br>
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-emerald-400">Trợ Thủ Tài Chính Moni</span>
+          </h2>
+        </div>
+        <p class="text-base text-slate-300 max-w-xl leading-relaxed">
+          Đánh giá điểm gãy trong 40 phút trải nghiệm thực tế và đề xuất giải pháp kỹ thuật tái định nghĩa luồng tương tác chatbot tài chính.
+        </p>
+        <div class="w-full h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent my-4"></div>
+        <div class="flex flex-col sm:flex-row items-center gap-4 text-sm text-slate-400">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-moni-purple"></span>
+            <span>Product Decision cốt lõi</span>
+          </div>
+          <div class="hidden sm:block text-slate-700">|</div>
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-moni-accent"></span>
+            <span>Cải tiến To-Be tương tác</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: 2-3 QUERY ĐẦU (HAPPY PATH & LOW CONFIDENCE) -->
+    <section id="slide-2" class="slide flex flex-col md:flex-row items-stretch gap-6">
+      <!-- Cột Trái: Thông tin -->
+      <div class="w-full md:w-1/2 flex flex-col justify-center space-y-6">
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest bg-emerald-400/10 px-3 py-1 rounded-md border border-emerald-500/20">BƯỚC 1: TRẢI NGHIỆM BAN ĐẦU</span>
+          <h2 class="font-outfit font-bold text-3xl text-white">Khởi động 2-3 Query Đầu</h2>
+        </div>
+        
+        <div class="space-y-4">
+          <!-- Item 1: Happy Path -->
+          <div class="p-4 rounded-xl border border-emerald-500/20 bg-emerald-950/10 flex items-start space-x-3">
+            <div class="p-2 bg-emerald-500/10 rounded-lg text-emerald-400 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-white text-sm">Query 1: Tối ưu chi tiêu (Happy Case)</h4>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Người dùng hỏi lãng phí tiền vào đâu. AI phân tích chính xác dữ liệu chi tiêu ăn uống 3 ngày gần đây và đưa ra gợi ý giảm ăn ngoài, nấu ăn để tiết kiệm.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Item 2: Low Confidence -->
+          <div class="p-4 rounded-xl border border-amber-500/20 bg-amber-950/10 flex items-start space-x-3">
+            <div class="p-2 bg-amber-500/10 rounded-lg text-amber-400 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-white text-sm">Query 2: Ghi chép và sửa nhãn (Low Confidence)</h4>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Người dùng thêm khoản *"ghi chép nhận 1k tiêu đề test"*. AI tự ý xếp vào nhãn `"Lương"`. Khi yêu cầu sửa nhãn, AI xác nhận đổi qua tin nhắn nhưng giao diện thẻ Card UI vẫn giữ nguyên nhãn cũ, tạo sự bất đồng bộ và hoài nghi.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cột Phải: Mockup/Ảnh minh chứng -->
+      <div class="w-full md:w-1/2 flex items-center justify-center bg-slate-950/40 rounded-2xl border border-slate-900 p-4 relative overflow-hidden">
+        <!-- Tab selector for images -->
+        <div class="absolute top-4 left-4 z-10 flex space-x-2 bg-slate-900/90 p-1.5 rounded-lg border border-slate-800 text-xs">
+          <button id="btnImgLog3" class="px-3 py-1 rounded bg-moni-purple text-white font-semibold transition" onclick="toggleSlide2Image(3)">Ảnh 1: Phân tích chi tiêu</button>
+          <button id="btnImgLog2" class="px-3 py-1 rounded text-slate-400 hover:text-white transition" onclick="toggleSlide2Image(2)">Ảnh 2: Ghi chép 1k</button>
+        </div>
+
+        <div class="w-full h-[400px] flex items-center justify-center relative mt-6">
+          <img id="imgLog3" src="media__1780462115270.png" class="max-h-[380px] object-contain rounded-xl shadow-lg border border-slate-800 transition duration-300" alt="Log 1: Happy case">
+          <img id="imgLog2" src="media__1780462110827.png" class="max-h-[380px] object-contain rounded-xl shadow-lg border border-slate-800 transition duration-300 hidden" alt="Log 2: Sửa nhãn">
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: ĐIỂM GÃY (GHOST DATA & FAILURE LOOP) -->
+    <section id="slide-3" class="slide flex flex-col md:flex-row items-stretch gap-6">
+      <!-- Cột Trái: Trực quan log thực tế -->
+      <div class="w-full md:w-1/2 flex items-center justify-center bg-slate-950/40 rounded-2xl border border-slate-900 p-4">
+        <div class="flex flex-col items-center space-y-2">
+          <span class="text-xs text-slate-500 font-bold bg-slate-900 px-3 py-1 rounded border border-slate-800">Ảnh chụp màn hình thực tế</span>
+          <img src="media__1780462106447.png" class="max-h-[380px] object-contain rounded-xl shadow-2xl border border-red-500/20" alt="Log 3: Lỗi không hiện list">
+        </div>
+      </div>
+      
+      <!-- Cột Phải: Phân tích chi tiết -->
+      <div class="w-full md:w-1/2 flex flex-col justify-center space-y-6">
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-red-500 uppercase tracking-widest bg-red-500/10 px-3 py-1 rounded-md border border-red-500/20">BƯỚC 2: ĐIỂM GÃY TRẢI NGHIỆM (FAILURE)</span>
+          <h2 class="font-outfit font-bold text-3xl text-white">Điểm Gãy: Ghost Data & Lặp Lỗi</h2>
+        </div>
+        
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Điểm gãy lớn nhất xảy ra khi người dùng yêu cầu xem lại ghi chép. Trợ lý liên tục khẳng định bằng văn bản rằng danh sách đang hiển thị, nhưng phần thân tin nhắn hoàn toàn **trống rỗng**.
+        </p>
+
+        <!-- Bảng đối chiếu -->
+        <div class="grid grid-cols-2 gap-4 text-xs">
+          <div class="p-3 rounded-xl border border-red-500/30 bg-red-950/10 space-y-1">
+            <h4 class="font-bold text-red-400">Thực Tế Lỗi (Reality)</h4>
+            <p class="text-slate-400 leading-relaxed">
+              AI hứa hẹn: *"đây là danh sách..."* nhưng không hiển thị giao diện. Hỏi tiếp thì tiếp tục hứa lèo rồi thú nhận không tìm kiếm theo nhãn được.
+            </p>
+          </div>
+          <div class="p-3 rounded-xl border border-emerald-500/30 bg-emerald-950/10 space-y-1">
+            <h4 class="font-bold text-emerald-400">Kỳ Vọng (Expectation)</h4>
+            <p class="text-slate-400 leading-relaxed">
+              Hệ thống trả về danh sách chi tiết dưới dạng Card UI tĩnh, đồng bộ hóa nhãn, kèm các bộ lọc trực quan để tương tác ngay lập tức.
+            </p>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-moni-orange animate-ping"></span>
+          <span class="text-slate-300 font-medium">Bế tắc (Stuck Point): Người dùng kẹt trong vòng lặp ảo ảnh dữ liệu.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: BẢN ĐỒ HÀNH TRÌNH HIỆN TẠI (AS-IS) -->
+    <section id="slide-4" class="slide flex flex-col justify-center space-y-6">
+      <div class="space-y-2 text-center">
+        <span class="text-xs font-bold text-moni-orange uppercase tracking-widest bg-moni-orange/10 px-3 py-1 rounded-md border border-moni-orange/20">BẢN ĐỒ TRẢI NGHIỆM AS-IS</span>
+        <h2 class="font-outfit font-bold text-3xl text-white">Hành trình người dùng bị đứt gãy</h2>
+      </div>
+
+      <!-- Timeline hành trình -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 pt-4">
+        <!-- Node 1: Happy -->
+        <div class="p-4 rounded-xl border border-emerald-500/20 bg-slate-900/60 relative flex flex-col items-center text-center space-y-2">
+          <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold font-outfit text-lg">1</div>
+          <h4 class="font-bold text-sm text-emerald-400">Hài Lòng (Happy)</h4>
+          <p class="text-xs text-slate-400">
+            Hỏi lãng phí. AI phân tích tốt chi phí ăn uống và gợi ý giải pháp.
+          </p>
+        </div>
+        
+        <!-- Node 2: Low Confidence -->
+        <div class="p-4 rounded-xl border border-amber-500/20 bg-slate-900/60 relative flex flex-col items-center text-center space-y-2">
+          <div class="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold font-outfit text-lg">2</div>
+          <h4 class="font-bold text-sm text-amber-400">Hoài Nghi</h4>
+          <p class="text-xs text-slate-400">
+            Ghi chép 1k. AI gắn sai nhãn. Chat sửa được nhưng UI không đổi.
+          </p>
+        </div>
+
+        <!-- Node 3: Failure -->
+        <div class="p-4 rounded-xl border border-red-500/20 bg-slate-900/60 relative flex flex-col items-center text-center space-y-2">
+          <div class="w-10 h-10 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold font-outfit text-lg">3</div>
+          <h4 class="font-bold text-sm text-red-400">Thất Vọng (Failure)</h4>
+          <p class="text-xs text-slate-400">
+            Đòi xem ghi chép. AI hứa hẹn nhưng màn hình trống rỗng.
+          </p>
+        </div>
+
+        <!-- Node 4: Correction -->
+        <div class="p-4 rounded-xl border border-orange-500/20 bg-slate-900/60 relative flex flex-col items-center text-center space-y-2">
+          <div class="w-10 h-10 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold font-outfit text-lg">4</div>
+          <h4 class="font-bold text-sm text-orange-400">Khắc Phục</h4>
+          <p class="text-xs text-slate-400">
+            Check nhãn. AI trả về list nhãn nhưng không có nhãn mới thêm.
+          </p>
+        </div>
+
+        <!-- Node 5: Stuck Point -->
+        <div class="p-4 rounded-xl border border-red-800 bg-red-950/20 relative flex flex-col items-center text-center space-y-2 shadow-lg shadow-red-900/10">
+          <div class="w-10 h-10 rounded-full bg-red-900 text-white flex items-center justify-center font-bold font-outfit text-lg animate-pulse">5</div>
+          <h4 class="font-bold text-sm text-red-500">Kẹt Lại (Stuck)</h4>
+          <p class="text-xs text-slate-400">
+            AI thú nhận không tìm kiếm theo nhãn. Bế tắc toàn luồng.
+          </p>
+        </div>
+      </div>
+      
+      <p class="text-xs text-center text-slate-500 italic mt-2">
+        *Điểm gãy nghiêm trọng nhất nằm ở bước 3 và bước 5, nơi người dùng hoàn toàn mất dấu dữ liệu do lỗi giao diện và khả năng AI.
+      </p>
+    </section>
+
+    <!-- SLIDE 5: SỬA PATH YẾU NHẤT (TO-BE SOLUTIONS) -->
+    <section id="slide-5" class="slide flex flex-col md:flex-row items-stretch gap-6">
+      <!-- Cột Trái: Đề xuất & Quyết định -->
+      <div class="w-full md:w-1/2 flex flex-col justify-center space-y-6">
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-moni-accent uppercase tracking-widest bg-moni-accent/10 px-3 py-1 rounded-md border border-moni-accent/20">GIẢI PHÁP TO-BE</span>
+          <h2 class="font-outfit font-bold text-3xl text-white">Sửa 1 Path Yếu Nhất</h2>
+        </div>
+
+        <div class="space-y-4 text-sm leading-relaxed text-slate-300">
+          <p>
+            Quyết định loại bỏ sự phụ thuộc vào việc để AI tự sinh tìm kiếm bằng văn bản (NLP). Thay thế bằng giao diện điều hướng trực quan bằng nút bấm và bộ lọc Frontend.
+          </p>
+
+          <!-- Core Changes List -->
+          <div class="space-y-3 pt-2 text-xs">
+            <div class="flex items-start space-x-2">
+              <span class="text-emerald-400 font-bold mt-0.5">✓</span>
+              <div>
+                <strong class="text-white">Xác nhận nhãn inline (Inline Tag Confirmation):</strong>
+                Hiển thị nhãn gợi ý ngay trên card giao dịch vừa thêm kèm nút bấm chỉnh sửa nhanh.
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-2">
+              <span class="text-emerald-400 font-bold mt-0.5">✓</span>
+              <div>
+                <strong class="text-white">Bộ lọc thẻ tag tĩnh (Interactive Tag Chips):</strong>
+                Hiển thị danh sách các tag phía trên list. Người dùng nhấn nút tag để lọc nhanh danh sách.
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-2">
+              <span class="text-emerald-400 font-bold mt-0.5">✓</span>
+              <div>
+                <strong class="text-white">Hỏi lại nguồn (Ask Source):</strong>
+                AI đặt câu hỏi gợi ý phương thức thanh toán ngay trên Card xác nhận (Ví dụ: Momo/Bank).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cột Phải: Đối chiếu As-Is / To-Be -->
+      <div class="w-full md:w-1/2 flex flex-col justify-center bg-slate-950/40 rounded-2xl border border-slate-900 p-6 space-y-4">
+        <h3 class="font-outfit font-bold text-lg text-white">Thay Đổi Luồng Giao Tiếp</h3>
+        
+        <div class="space-y-3 text-xs">
+          <!-- As-Is -->
+          <div class="p-3 rounded-lg border border-red-500/20 bg-red-950/5">
+            <span class="font-bold text-red-400 uppercase tracking-widest text-[10px]">Luồng Cũ (As-Is)</span>
+            <div class="mt-1.5 flex items-center justify-between text-slate-400">
+              <span>Gõ văn bản để tìm kiếm tag</span>
+              <span class="text-red-400 font-bold">Lỗi & hứa lèo →</span>
+            </div>
+          </div>
+          
+          <!-- Icon arrow downward -->
+          <div class="flex justify-center text-slate-600 font-bold text-lg">↓</div>
+          
+          <!-- To-Be -->
+          <div class="p-3 rounded-lg border border-emerald-500/20 bg-emerald-950/5 glow-green">
+            <span class="font-bold text-emerald-400 uppercase tracking-widest text-[10px]">Luồng Mới (To-Be)</span>
+            <div class="mt-1.5 flex items-center justify-between text-slate-300">
+              <span>Render thẻ Tag Chips trực quan</span>
+              <span class="text-emerald-400 font-bold">1 Click để lọc dữ liệu</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: CHI TIẾT ĐỀ XUẤT TO-BE (DEMO TƯƠNG TÁC) -->
+    <section id="slide-6" class="slide flex flex-col md:flex-row items-stretch gap-6">
+      <!-- Cột Trái: Đề xuất chi tiết -->
+      <div class="w-full md:w-1/2 flex flex-col justify-center space-y-6">
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-moni-accent uppercase tracking-widest bg-moni-accent/10 px-3 py-1 rounded-md border border-moni-accent/20">DEMO TƯƠNG TÁC</span>
+          <h2 class="font-outfit font-bold text-3xl text-white">Giao Diện Đề Xuất Mới</h2>
+        </div>
+
+        <div class="space-y-4 text-sm leading-relaxed text-slate-300">
+          <p>
+            Hãy trải nghiệm thử giao diện chatbot giả lập cải tiến ở cột bên phải.
+          </p>
+          <div class="space-y-2 text-xs">
+            <div class="flex items-start space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-moni-accent mt-1 flex-shrink-0"></span>
+              <span class="text-slate-300">Thẻ xác nhận hiển thị rõ ràng nhãn được gán kèm nút chọn nhanh.</span>
+            </div>
+            <div class="flex items-start space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-moni-accent mt-1 flex-shrink-0"></span>
+              <span class="text-slate-300">Tích hợp câu hỏi <strong>Xác nhận nguồn tiền</strong> (Momo/Bank) trực tiếp để người dùng bấm nút thay vì chat text.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cột Phải: Chatbot tương tác thực tế -->
+      <div class="w-full md:w-1/2 flex items-center justify-center">
+        <!-- Interactive Chat Simulator Container -->
+        <div class="w-full max-w-sm h-[400px] rounded-2xl border border-slate-800 bg-moni-slate shadow-xl flex flex-col justify-between overflow-hidden">
+          <!-- Chat Header -->
+          <div class="px-4 py-3 border-b border-slate-800 bg-slate-900/80 flex items-center space-x-2">
+            <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-moni-purple to-moni-pink flex items-center justify-center text-white text-[10px]">M</div>
+            <div>
+              <h4 class="font-bold text-xs text-white">Trợ thủ AI - Moni (Giao diện Mới)</h4>
+              <p class="text-[9px] text-moni-accent">● Đang hoạt động</p>
+            </div>
+          </div>
+          
+          <!-- Chat Body (Scrollable) -->
+          <div id="chatBody" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs">
+            <!-- Msg 1 -->
+            <div class="flex items-start space-x-2">
+              <div class="w-5 h-5 rounded-full bg-slate-800 flex-shrink-0 flex items-center justify-center text-[8px]">U</div>
+              <div class="bg-slate-800 px-3 py-2 rounded-2xl rounded-tl-none text-slate-200 max-w-[80%]">
+                ghi chép nhận 1k tiêu đề test
+              </div>
+            </div>
+            
+            <!-- Msg 2 with Interactive Card -->
+            <div class="flex items-start space-x-2">
+              <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-moni-purple to-moni-pink flex-shrink-0 flex items-center justify-center text-white text-[8px]">M</div>
+              <div class="space-y-2 max-w-[85%]">
+                <div class="bg-slate-800/80 px-3 py-2 rounded-2xl rounded-tl-none text-slate-200">
+                  Đã ghi nhận giao dịch! Vui lòng xác nhận nhãn và nguồn tiền:
+                </div>
+                
+                <!-- Interactive UI Card -->
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
+                  <div class="flex justify-between items-center">
+                    <div>
+                      <h5 class="font-bold text-white text-[11px]" id="demoTitle">test</h5>
+                      <span class="text-[9px] text-slate-500">Vừa thêm - 11:39</span>
+                    </div>
+                    <span class="text-xs font-bold text-emerald-400">+1.000đ</span>
+                  </div>
+                  
+                  <div class="h-px bg-slate-900"></div>
+                  
+                  <!-- Tag select -->
+                  <div class="space-y-1">
+                    <span class="text-[9px] text-slate-500 font-semibold block">CHỌN NHÃN:</span>
+                    <div class="flex flex-wrap gap-1.5" id="demoTags">
+                      <button class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-300 hover:border-moni-pink transition" onclick="selectDemoTag('Lương', this)">💼 Lương</button>
+                      <button class="px-2 py-0.5 rounded bg-moni-purple/20 border border-moni-purple/50 text-[10px] text-white transition" onclick="selectDemoTag('Test', this)">🏷️ Test</button>
+                      <button class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-300 hover:border-moni-pink transition" onclick="selectDemoTag('Khác', this)">⚙️ Khác</button>
+                    </div>
+                  </div>
+
+                  <!-- Source select (NEW FEATURE) -->
+                  <div class="space-y-1">
+                    <span class="text-[9px] text-slate-500 font-semibold block">NGUỒN TIỀN (SOURCE):</span>
+                    <div class="flex gap-1.5" id="demoSources">
+                      <button class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-300 hover:border-emerald-400 transition" onclick="selectDemoSource('Ví Momo', this)">Momo</button>
+                      <button class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-300 hover:border-emerald-400 transition" onclick="selectDemoSource('Ngân hàng', this)">Bank</button>
+                    </div>
+                  </div>
+
+                  <!-- Save Button -->
+                  <button class="w-full py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-[10px] transition shadow-lg shadow-emerald-500/20" onclick="confirmDemoSave()">
+                    XÁC NHẬN LƯU GIAO DỊCH
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Chat Input (Visual Only) -->
+          <div class="p-3 border-t border-slate-800 bg-slate-900/60 flex items-center space-x-2 text-[10px] text-slate-500">
+            <span class="flex-grow bg-slate-950 px-3 py-1.5 rounded-full border border-slate-900">Hỏi Moni bất cứ điều gì...</span>
+            <div class="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">➔</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CONTROLS & FOOTER -->
+  <footer class="w-full px-8 py-5 border-t border-slate-900 flex justify-between items-center z-50 bg-moni-dark/90 backdrop-blur-md">
+    <div class="text-xs text-slate-500">
+      Nhấn phím <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-800 rounded font-semibold text-slate-400">➔</kbd> hoặc <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-800 rounded font-semibold text-slate-400">⬅</kbd> để chuyển slide
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="flex items-center space-x-3">
+      <button onclick="prevSlide()" class="px-4 py-2 rounded-lg border border-slate-800 bg-slate-950 text-slate-400 hover:bg-slate-900 hover:text-white transition flex items-center space-x-1 text-sm font-semibold">
+        <span>⬅ Prev</span>
+      </button>
+      <button onclick="nextSlide()" class="px-4 py-2 rounded-lg border border-slate-800 bg-slate-950 text-slate-400 hover:bg-slate-900 hover:text-white transition flex items-center space-x-1 text-sm font-semibold">
+        <span>Next ➔</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT CODE -->
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 6;
+
+    function showSlide(index) {
+      if (index < 1 || index > totalSlides) return;
+      
+      // Update Slide State
+      document.querySelector(`#slide-${currentSlide}`).classList.remove('active');
+      currentSlide = index;
+      document.querySelector(`#slide-${currentSlide}`).classList.add('active');
+
+      // Update ProgressBar
+      const percent = (currentSlide / totalSlides) * 100;
+      document.getElementById('progressBar').style.width = `${percent}%`;
+
+      // Update slide index text
+      document.getElementById('slideIndex').innerText = `Slide ${currentSlide} / ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    // Keyboard navigation listener
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === ' ') {
+        nextSlide();
+      } else if (event.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+
+    // Toggle Slide 2 images
+    function toggleSlide2Image(imgNum) {
+      const img3 = document.getElementById('imgLog3');
+      const img2 = document.getElementById('imgLog2');
+      const btn3 = document.getElementById('btnImgLog3');
+      const btn2 = document.getElementById('btnImgLog2');
+
+      if (imgNum === 3) {
+        img3.classList.remove('hidden');
+        img2.classList.add('hidden');
+        btn3.className = "px-3 py-1 rounded bg-moni-purple text-white font-semibold transition";
+        btn2.className = "px-3 py-1 rounded text-slate-400 hover:text-white transition";
+      } else {
+        img3.classList.add('hidden');
+        img2.classList.remove('hidden');
+        btn3.className = "px-3 py-1 rounded text-slate-400 hover:text-white transition";
+        btn2.className = "px-3 py-1 rounded bg-moni-purple text-white font-semibold transition";
+      }
+    }
+
+    // Interactive Demo State variables
+    let selectedTag = "Test";
+    let selectedSource = "";
+
+    function selectDemoTag(tag, element) {
+      selectedTag = tag;
+      // Style logic
+      const buttons = document.querySelectorAll('#demoTags button');
+      buttons.forEach(btn => {
+        btn.className = "px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-300 hover:border-moni-pink transition";
+      });
+      element.className = "px-2 py-0.5 rounded bg-moni-purple/20 border border-moni-purple/50 text-[10px] text-white transition";
+      
+      // Append tag message in simulation
+      appendChatBubble("U", `Đổi nhãn thành nhãn "${tag}"`);
+      setTimeout(() => {
+        appendChatBubble("M", `Đã cập nhật nhãn của giao dịch thành "${tag}".`);
+      }, 600);
+    }
+
+    function selectDemoSource(source, element) {
+      selectedSource = source;
+      const buttons = document.querySelectorAll('#demoSources button');
+      buttons.forEach(btn => {
+        btn.className = "px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-300 hover:border-emerald-400 transition";
+      });
+      element.className = "px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/50 text-[10px] text-white transition";
+      
+      // Append source message in simulation
+      appendChatBubble("U", `Chọn nguồn tiền: ${source}`);
+      setTimeout(() => {
+        appendChatBubble("M", `Ghi nhận nguồn thanh toán từ: ${source}`);
+      }, 600);
+    }
+
+    function confirmDemoSave() {
+      if (!selectedSource) {
+        alert("Vui lòng chọn nguồn tiền thanh toán trước khi lưu!");
+        return;
+      }
+      appendChatBubble("M", `✅ Giao dịch đã được lưu chính thức vào cơ sở dữ liệu với nhãn [${selectedTag}] và nguồn tiền [${selectedSource}].`);
+    }
+
+    function appendChatBubble(sender, text) {
+      const chatBody = document.getElementById('chatBody');
+      const bubble = document.createElement('div');
+      bubble.className = "flex items-start space-x-2 animate-fade-in";
+      
+      if (sender === "U") {
+        bubble.innerHTML = `
+          <div class="w-5 h-5 rounded-full bg-slate-800 flex-shrink-0 flex items-center justify-center text-[8px]">U</div>
+          <div class="bg-slate-800 px-3 py-2 rounded-2xl rounded-tl-none text-slate-200 max-w-[80%]">
+            ${text}
+          </div>
+        `;
+      } else {
+        bubble.innerHTML = `
+          <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-moni-purple to-moni-pink flex-shrink-0 flex items-center justify-center text-white text-[8px]">M</div>
+          <div class="bg-slate-800/80 px-3 py-2 rounded-2xl rounded-tl-none text-slate-200 max-w-[80%]">
+            ${text}
+          </div>
+        `;
+      }
+      
+      chatBody.appendChild(bubble);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+  </script>
+</body>
+</html>

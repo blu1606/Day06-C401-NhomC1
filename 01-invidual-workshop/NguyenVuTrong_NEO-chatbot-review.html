@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Audit Report - Chatbot NEO (Vietnam Airlines)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-12">
+
+    <header class="bg-gradient-to-r from-teal-800 to-cyan-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 p-2 rounded-lg">
+                    <i data-lucide="bot" class="w-8 h-8 text-cyan-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Review Chatbot NEO — Vietnam Airlines</h1>
+                    <p class="text-xs text-slate-300 flex items-center gap-1 mt-0.5">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Ngày review: 03/06/2026 | Phương pháp: 40-phút UX Audit
+                    </p>
+                </div>
+            </div>
+            <span class="bg-amber-400/20 text-amber-300 border border-amber-400/30 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Cần cải tiến UX khẩn cấp
+            </span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 mt-8">
+
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start gap-4">
+                <div class="p-3 bg-emerald-50 rounded-lg text-emerald-600"><i data-lucide="check-circle-2"></i></div>
+                <div>
+                    <h4 class="text-sm font-medium text-slate-500">Ưu điểm lớn nhất</h4>
+                    <p class="text-base font-semibold text-slate-800 mt-1">Multi-turn Form Filling & Prompt Injection Safety tốt</p>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start gap-4">
+                <div class="p-3 bg-rose-50 rounded-lg text-rose-600"><i data-lucide="x-circle"></i></div>
+                <div>
+                    <h4 class="text-sm font-medium text-slate-500">Nhược điểm cốt lõi</h4>
+                    <p class="text-base font-semibold text-slate-800 mt-1">Lỗi API gây vòng lặp chết (Dead Loop), kẹt intent</p>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start gap-4">
+                <div class="p-3 bg-amber-50 rounded-lg text-amber-600"><i data-lucide="shuffle"></i></div>
+                <div>
+                    <h4 class="text-sm font-medium text-slate-500">Điểm gãy nghiêm trọng</h4>
+                    <p class="text-base font-semibold text-slate-800 mt-1">Bỏ qua Intent Shift hoàn toàn sau khi lỗi hệ thống</p>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start gap-4">
+                <div class="p-3 bg-blue-50 rounded-lg text-blue-600"><i data-lucide="wrench"></i></div>
+                <div>
+                    <h4 class="text-sm font-medium text-slate-500">Ưu tiên Fix cao nhất</h4>
+                    <p class="text-base font-semibold text-slate-800 mt-1">Intent re-classifier sau lỗi + Fallback giá tĩnh</p>
+                </div>
+            </div>
+        </section>
+
+        <nav class="flex border-b border-slate-200 mb-6 overflow-x-auto gap-2 bg-white p-1.5 rounded-lg shadow-sm">
+            <button onclick="switchTab('tab-part1')" id="btn-tab-part1" class="tab-btn px-4 py-2.5 rounded-md text-sm font-medium transition-all whitespace-nowrap bg-teal-800 text-white shadow-sm flex items-center gap-2">
+                <i data-lucide="message-square" class="w-4 h-4"></i> PHẦN 1 — DÙNG THỬ (Promise vs Thực tế)
+            </button>
+            <button onclick="switchTab('tab-part2')" id="btn-tab-part2" class="tab-btn px-4 py-2.5 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 transition-all whitespace-nowrap flex items-center gap-2">
+                <i data-lucide="git-fork" class="w-4 h-4"></i> PHẦN 2 — VẼ FLOW AS-IS
+            </button>
+            <button onclick="switchTab('tab-part3')" id="btn-tab-part3" class="tab-btn px-4 py-2.5 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 transition-all whitespace-nowrap flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-4 h-4"></i> PHẦN 3 — SỬA PATH YẾU NHẤT (To-Be)
+            </button>
+            <button onclick="switchTab('tab-summary')" id="btn-tab-summary" class="tab-btn px-4 py-2.5 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 transition-all whitespace-nowrap flex items-center gap-2">
+                <i data-lucide="pie-chart" class="w-4 h-4"></i> TỔNG KẾT ĐÁNH GIÁ
+            </button>
+        </nav>
+
+        <div id="tab-part1" class="tab-content active space-y-6">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl shadow-sm">
+                <div class="flex gap-3">
+                    <i data-lucide="info" class="text-indigo-600 mt-0.5"></i>
+                    <div>
+                        <h3 class="font-semibold text-indigo-900">Định vị & Hứa hẹn (Promise) của NEO</h3>
+                        <p class="text-sm text-indigo-800 mt-1">Trang chủ Vietnam Airlines định vị NEO là "trợ lý ảo" có khả năng hỗ trợ toàn diện: tìm chuyến bay, giá vé, thủ tục, ưu đãi — tức kỳ vọng người dùng sẽ nhận được câu trả lời trực tiếp, không cần rời khỏi chat.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between border-b pb-3 mb-4">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span class="bg-slate-100 text-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                        Query 1 — Hỏi giá vé SGN → SFO
+                    </h3>
+                    <span class="bg-rose-100 text-rose-700 px-2 py-0.5 text-xs font-semibold rounded flex items-center gap-1">
+                        <i data-lucide="zap-off" class="w-3 h-3"></i> Có điểm gãy nghiêm trọng
+                    </span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="p-3 font-semibold text-slate-700 w-16">Bước</th>
+                                <th class="p-3 font-semibold text-slate-700 w-1/3">Hành động người dùng</th>
+                                <th class="p-3 font-semibold text-slate-700">Phản hồi của NEO</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="p-3 text-slate-400">1</td><td class="p-3 font-medium">Hỏi giá vé SGN → SFO</td><td class="p-3 text-slate-600 flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Thu thập thông tin: thiếu ngày đi + số hành khách</td></tr>
+                            <tr><td class="p-3 text-slate-400">2</td><td class="p-3 font-medium">Cung cấp ngày: 10/07/2026</td><td class="p-3 text-slate-600 flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Xác nhận, hỏi tiếp số hành khách</td></tr>
+                            <tr><td class="p-3 text-slate-400">3</td><td class="p-3 font-medium">"2 người lớn, 1 em bé"</td><td class="p-3 text-slate-600 flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Tóm tắt đầy đủ, hỏi xác nhận</td></tr>
+                            <tr class="bg-rose-50/50"><td class="p-3 text-rose-900 font-medium">4</td><td class="p-3 font-medium text-rose-900">Xác nhận "Có"</td><td class="p-3 text-rose-700 font-semibold flex items-center gap-2"><span class="text-rose-500 font-bold">✗</span> "Hệ thống gặp lỗi khi tìm kiếm chuyến bay"</td></tr>
+                            <tr class="bg-rose-50/50"><td class="p-3 text-rose-900 font-medium">5</td><td class="p-3 font-medium text-rose-900">Hỏi giá vé trung bình</td><td class="p-3 text-rose-700 font-semibold flex items-center gap-2"><span class="text-rose-500 font-bold">✗</span> Lặp lại thông báo lỗi hệ thống</td></tr>
+                            <tr class="bg-rose-50/50"><td class="p-3 text-rose-900 font-medium">6</td><td class="p-3 font-medium text-rose-900">Hỏi giá tốt nhất để đến Mỹ</td><td class="p-3 text-rose-700 font-semibold flex items-center gap-2"><span class="text-rose-500 font-bold">✗</span> Lặp lại thông báo lỗi hệ thống</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 bg-amber-50 p-4 rounded-xl border border-amber-200">
+                    <p class="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1 mb-1">
+                        <i data-lucide="unplug" class="w-4 h-4"></i> Phân tích Điểm Gãy (Painpoint)
+                    </p>
+                    <p class="text-sm text-slate-700">Sau khi tìm kiếm thất bại, NEO <strong>không chuyển sang mode fallback</strong>. Người dùng chủ động thay đổi intent (từ <em>"tìm chuyến cụ thể"</em> → <em>"cho giá trung bình"</em>) nhưng hệ thống vẫn nhận diện sai mục tiêu cũ và tiếp tục báo lỗi — <strong>intent shift bị bỏ qua hoàn toàn.</strong></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b pb-3 mb-4">
+                            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                <span class="bg-slate-100 text-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                                Query 2 — Thủ tục + Prompt Injection
+                            </h3>
+                            <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs font-semibold rounded flex items-center gap-1">
+                                <i data-lucide="shield-check" class="w-3 h-3"></i> Bảo mật tốt
+                            </span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="p-2.5 bg-slate-50 rounded-lg">
+                                <p class="text-xs text-slate-400 font-semibold">Hành động 1: Hỏi thủ tục trước bay</p>
+                                <p class="text-slate-700 mt-0.5 font-medium">✓ Trả lời đầy đủ: giấy tờ, check-in, lưu ý hành lý.</p>
+                            </div>
+                            <div class="p-2.5 bg-emerald-50/50 rounded-lg border border-emerald-100">
+                                <p class="text-xs text-emerald-600 font-semibold">Hành động 2: Inject nội dung độc hại ("đánh bom sân bay")</p>
+                                <p class="text-emerald-800 mt-0.5 font-medium">✓ Từ chối rất mượt mà, định hướng (redirect) ngược lại về chủ đề hàng không.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t text-xs text-slate-500 italic">
+                        <strong>Nhận xét:</strong> NEO từ chối không phán xét, không rò rỉ thông tin nhạy cảm, giữ tone trung lập. Đây là con đường (path) hoạt động xuất sắc nhất.
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b pb-3 mb-4">
+                            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                <span class="bg-slate-100 text-slate-700 w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+                                Query 3 — Ưu đãi & Áp dụng đồng thời
+                            </h3>
+                            <span class="bg-blue-100 text-blue-700 px-2 py-0.5 text-xs font-semibold rounded flex items-center gap-1">
+                                <i data-lucide="activity" class="w-3 h-3"></i> Bất nhất hành vi
+                            </span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="p-2.5 bg-slate-50 rounded-lg">
+                                <p class="text-xs text-slate-400 font-semibold">Hành động 1 & 2: Hỏi nhóm ưu đãi + cộng dồn ưu đãi</p>
+                                <p class="text-slate-700 mt-0.5 font-medium">✓ Liệt kê rõ 5 nhóm chi tiết. Phân loại chuẩn xác case được/không được phép dùng chung.</p>
+                            </div>
+                            <div class="p-2.5 bg-amber-50/50 rounded-lg border border-amber-100">
+                                <p class="text-xs text-amber-700 font-semibold">Hành động 3: Hỏi ưu đãi bay đến New York</p>
+                                <p class="text-amber-900 mt-0.5 font-medium">✓ Liệt kê chi tiết ưu đãi + đưa ra mức giá vé tham khảo cụ thể.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t text-xs text-rose-600 bg-rose-50 p-2 rounded-lg">
+                        <strong>Nghịch lý logic:</strong> Tại Query 3, NEO lấy được dữ liệu giá vé tĩnh/tham khảo (cho New York). Tuy nhiên ở Query 1 (khi lỗi API tìm kiếm), bot lại không thể kích hoạt luồng giá tĩnh này cho chặng San Francisco.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-part2" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h3 class="text-base font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <i data-lucide="git-commit" class="text-teal-700"></i> Bản Đồ Tổng Quan Luồng Đi Của Hệ Thống (As-Is)
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center text-xs font-medium">
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 flex flex-col justify-between">
+                        <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md mb-3 self-center uppercase font-bold tracking-wider text-[10px]">1. Happy Path</span>
+                        <div class="space-y-2">
+                            <div class="bg-white border p-2 rounded shadow-sm">Người dùng hỏi (Ưu đãi/Thủ tục)</div>
+                            <div class="text-slate-400">↓</div>
+                            <div class="bg-emerald-50 text-emerald-800 border border-emerald-200 p-2 rounded">Hiểu intent ngay & Trả lời có cấu trúc</div>
+                            <div class="text-slate-400">↓</div>
+                            <div class="bg-emerald-600 text-white p-2 rounded font-semibold">KẾT THÚC THỎA MÃN</div>
+                        </div>
+                    </div>
+
+                    <div class="border border-rose-200 rounded-xl p-4 bg-rose-50/30 flex flex-col justify-between ring-2 ring-rose-500/20">
+                        <span class="bg-rose-100 text-rose-800 px-2 py-1 rounded-md mb-3 self-center uppercase font-bold tracking-wider text-[10px]">2. Low-Confidence (Lỗi)</span>
+                        <div class="space-y-2">
+                            <div class="bg-white border p-2 rounded shadow-sm">Form-filling: Thu thập thông tin ok</div>
+                            <div class="text-slate-400">↓</div>
+                            <div class="bg-rose-100 text-rose-900 border border-rose-200 p-2 rounded font-bold">API tìm vé lỗi ⚠️</div>
+                            <div class="text-slate-400">↓</div>
+                            <div class="bg-red-500 text-white p-2 rounded font-bold border-2 border-red-700 animate-pulse">ĐIỂM GÃY: Kẹt Intent, báo lỗi liên tục</div>
+                        </div>
+                    </div>
+
+                    <div class="border border-amber-200 rounded-xl p-4 bg-amber-50/30 flex flex-col justify-between">
+                        <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded-md mb-3 self-center uppercase font-bold tracking-wider text-[10px]">3. Failure Loop</span>
+                        <div class="space-y-2">
+                            <div class="bg-white border p-2 rounded shadow-sm">User đổi query xin giá trung bình</div>
+                            <div class="text-slate-400">↓</div>
+                            <div class="bg-amber-100 text-amber-900 border border-amber-300 p-2 rounded">Bot phớt lờ, lặp lại câu báo lỗi x3</div>
+                            <div class="text-slate-400">↓</div>
+                            <div class="bg-amber-600 text-white p-2 rounded font-semibold">VÒNG LẶP CHẾT (Dead Loop)</div>
+                        </div>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 flex flex-col justify-between">
+                        <span class="bg-slate-200 text-slate-800 px-2 py-1 rounded-md mb-3 self-center uppercase font-bold tracking-wider text-[10px]">4. Correction Path</span>
+                        <div class="space-y-2">
+                            <div class="bg-white border p-2 rounded shadow-sm">Người dùng bấm nút RESET phiên</div>
+                            <div class="text-slate-400">↓</div>
+                            <div class="bg-slate-100 border p-2 rounded">Xoá sạch lịch sử chat (Mất Context)</div>
+                            <div class="text-slate-400">↓</div>
+                            <div class="bg-slate-700 text-white p-2 rounded font-semibold">Bắt đầu lại (Không lưu log lỗi)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 border-t pt-4 flex gap-4 items-center bg-red-50 p-4 rounded-xl border border-red-100">
+                    <div class="bg-red-500 text-white p-2.5 rounded-full"><i data-lucide="alert-circle"></i></div>
+                    <div class="text-sm text-red-950">
+                        <strong class="block text-base font-bold text-red-900">Người dùng đang bị kẹt cứng ở đâu?</strong>
+                        Bị kẹt ở bước chuyển đổi mục đích (intent shift) sau khi API lỗi. Bot không có fallback logic thông minh nào, ép người dùng phải lựa chọn duy nhất là tự Reset lại cuộc hội thoại từ đầu.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-part3" class="tab-content space-y-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
+                    <div class="flex items-center gap-2 font-bold text-slate-900 text-base border-b pb-3">
+                        <div class="p-1.5 bg-teal-50 rounded text-teal-700"><i data-lucide="git-compare"></i></div>
+                        3.1 Nhận diện Intent Shift sau lỗi
+                    </div>
+                    <p class="text-sm text-slate-600"><strong>Giải pháp:</strong> Thêm một tầng phân loại lại intent (Re-classification layer) ngay khi chatbot rơi vào trạng thái lỗi kết nối API.</p>
+                    <div class="bg-slate-900 text-slate-100 p-4 rounded-lg text-xs font-mono space-y-1.5 shadow-inner">
+                        <p class="text-slate-400">// Logic điều hướng thông minh mới</p>
+                        <p><span class="text-pink-400">Khi Trạng thái ==</span> <span class="text-amber-300">ERROR</span>:</p>
+                        <p class="pl-4">├─ <span class="text-cyan-300">Nếu</span> từ khoá chứa ("giá trung bình", "khoảng giá")</p>
+                        <p class="pl-8 text-emerald-400">→ Chuyển qua mode: Trả lời tĩnh bằng Knowledge Base</p>
+                        <p class="pl-4">├─ <span class="text-cyan-300">Nếu</span> cố chấp hỏi lại cùng một hành trình</p>
+                        <p class="pl-8 text-amber-400">→ Thử lại 1 lần, sau đó tự kích hoạt Handoff</p>
+                        <p class="pl-4">└─ <span class="text-cyan-300">Nếu</span> im lặng hoặc tự reset</p>
+                        <p class="pl-8 text-slate-400">→ Ghi log lỗi ngầm, kết thúc êm đẹp (gracefully)</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
+                    <div class="flex items-center gap-2 font-bold text-slate-900 text-base border-b pb-3">
+                        <div class="p-1.5 bg-teal-50 rounded text-teal-700"><i data-lucide="message-square-plus"></i></div>
+                        3.2 Fallback Message Thông Minh Hơn
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-rose-600 tracking-wider uppercase block">Hiện tại (Tệ)</span>
+                        <div class="p-3 bg-rose-50 rounded-lg text-xs text-rose-800 italic">"Rất tiếc, hệ thống gặp lỗi khi tìm kiếm chuyến bay. Xin quý khách vui lòng thử lại sau hoặc liên hệ với đại lý hỗ trợ."</div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-emerald-600 tracking-wider uppercase block">Đề xuất To-Be (Tốt hơn)</span>
+                        <div class="p-3 bg-emerald-50 rounded-lg text-xs text-emerald-900 border border-emerald-200">
+                            "NEO hiện không thể kết nối hệ thống đặt vé để lấy kết quả chính xác cho chặng SGN–SFO ngày 10/07. Tuy nhiên, theo dữ liệu tham khảo, giá vé phổ thông một chiều SGN–SFO thường dao động từ <strong>khoảng 18–30 triệu VND</strong> tùy thời điểm đặt. Quý khách muốn NEO kiểm tra lại sau, hay hỗ trợ theo cách khác?"
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 pt-2">
+                        <span class="bg-white border text-slate-700 px-2.5 py-1 rounded-md text-[11px] font-medium shadow-sm flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3 h-3 text-teal-600"></i> Thử lại tìm kiếm</span>
+                        <span class="bg-white border text-slate-700 px-2.5 py-1 rounded-md text-[11px] font-medium shadow-sm flex items-center gap-1"><i data-lucide="user" class="w-3 h-3 text-teal-600"></i> Nói chuyện với tư vấn viên</span>
+                        <span class="bg-white border text-slate-700 px-2.5 py-1 rounded-md text-[11px] font-medium shadow-sm flex items-center gap-1"><i data-lucide="calendar-days" class="w-3 h-3 text-teal-600"></i> Giá tham khảo theo tháng</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-3">
+                    <div class="flex items-center gap-2 font-bold text-slate-900 text-base border-b pb-3">
+                        <div class="p-1.5 bg-teal-50 rounded text-teal-700"><i data-lucide="edit-3"></i></div>
+                        3.3 Undo / Sửa Thông Tin Trong Flow
+                    </div>
+                    <p class="text-sm text-slate-600">Thay vì chỉ đưa ra lựa chọn nghèo nàn duy nhất là bắt ép xác nhận: <code class="bg-slate-100 px-1 rounded text-xs text-rose-600">"Đúng không? (Có/Không)"</code>, hệ thống To-Be cần hỗ trợ menu linh động hoặc nhận dạng text chỉnh sửa:</p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+                        <div class="bg-slate-50 border p-2.5 rounded-lg flex items-center gap-2 text-emerald-700"><i data-lucide="check" class="w-4 h-4"></i> Xác nhận đúng</div>
+                        <div class="bg-slate-50 border p-2.5 rounded-lg flex items-center gap-2 text-slate-700"><i data-lucide="calendar" class="w-4 h-4 text-teal-600"></i> Sửa ngày đi</div>
+                        <div class="bg-slate-50 border p-2.5 rounded-lg flex items-center gap-2 text-slate-700"><i data-lucide="users" class="w-4 h-4 text-teal-600"></i> Sửa số hành khách</div>
+                        <div class="bg-slate-50 border p-2.5 rounded-lg flex items-center gap-2 text-slate-700"><i data-lucide="plane-takeoff" class="w-4 h-4 text-teal-600"></i> Đổi hành trình</div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-3">
+                    <div class="flex items-center gap-2 font-bold text-slate-900 text-base border-b pb-3">
+                        <div class="p-1.5 bg-teal-50 rounded text-teal-700"><i data-lucide="phone-forwarded"></i></div>
+                        3.4 Handoff Sang Người Thật Tự Động
+                    </div>
+                    <p class="text-sm text-slate-600"><strong>Cơ chế kích hoạt:</strong> Sau <strong>2 lần liên tiếp</strong> gặp lỗi hệ thống hoặc không giải quyết được vấn đề của cùng một user, NEO tự động đề xuất phương án chuyển đổi kênh hỗ trợ:</p>
+                    <div class="bg-teal-50/50 border border-teal-100 p-3 rounded-lg text-xs space-y-2 text-slate-700">
+                        <p class="font-medium text-teal-900">"NEO nhận thấy bạn đang gặp khó khăn. Để hỗ trợ tốt nhất, bạn có muốn:"</p>
+                        <ul class="space-y-1 pl-2">
+                            <li class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-teal-700"></i> Gọi tổng đài: <strong class="text-teal-900">1900 1100</strong></li>
+                            <li class="flex items-center gap-1.5"><i data-lucide="globe" class="w-3.5 h-3.5 text-teal-700"></i> Tra cứu trực tiếp trên website</li>
+                            <li class="flex items-center gap-1.5"><i data-lucide="mail" class="w-3.5 h-3.5 text-teal-700"></i> Để lại email — Nhân viên sẽ liên hệ lại ngay</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-3">
+                <div class="flex items-center gap-2 font-bold text-slate-900 text-base border-b pb-3">
+                    <div class="p-1.5 bg-teal-50 rounded text-teal-700"><i data-lucide="terminal"></i></div>
+                    3.5 Correction Log (Dữ liệu quan trọng cho Đội Ngũ Phát Triển)
+                </div>
+                <p class="text-sm text-slate-600">Hệ thống tự động ghi nhật ký (log) khi phát sinh lỗi để làm giàu dữ liệu huấn luyện (training data), tránh thất thoát phản hồi giá trị từ người dùng:</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border border-slate-200 rounded-lg overflow-hidden">
+                        <thead>
+                            <tr class="bg-slate-800 text-slate-100 font-semibold">
+                                <th class="p-2.5 w-1/3">Trường dữ liệu</th>
+                                <th class="p-2.5">Giá trị log mẫu thu được</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y text-slate-700 font-mono">
+                            <tr><td class="p-2.5 bg-slate-50 font-sans font-medium">Session ID</td><td class="p-2.5 text-blue-600">#abc123</td></tr>
+                            <tr><td class="p-2.5 bg-slate-50 font-sans font-medium">Intent ban đầu</td><td class="p-2.5">flight_search</td></tr>
+                            <tr><td class="p-2.5 bg-slate-50 font-sans font-medium">Thông tin đã thu thập</td><td class="p-2.5 text-slate-600">SGN → SFO, 10/07, 2A+1I</td></tr>
+                            <tr><td class="p-2.5 bg-slate-50 font-sans font-medium">Điểm thất bại</td><td class="p-2.5 text-rose-600">API timeout / no result</td></tr>
+                            <tr><td class="p-2.5 bg-slate-50 font-sans font-medium">Intent sau thất bại</td><td class="p-2.5">price_reference_query</td></tr>
+                            <tr><td class="p-2.5 bg-slate-50 font-sans font-medium">NEO nhận ra intent mới?</td><td class="p-2.5 text-rose-600 font-sans font-bold">❌ Không</td></tr>
+                            <tr><td class="p-2.5 bg-slate-50 font-sans font-medium">User thoát qua handoff?</td><td class="p-2.5 text-rose-600 font-sans font-bold">❌ Tự bấm nút Reset</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-summary" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="bar-chart-3" class="text-teal-700"></i> Ma Trận Đánh Giá Đa Chiều (UX Matrix)
+                </h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-800 text-white border-b border-slate-700 text-xs uppercase tracking-wider">
+                                <th class="p-4 font-semibold w-1/4">Tiêu chí (Dimension)</th>
+                                <th class="p-4 font-semibold w-24 text-center">Đánh giá</th>
+                                <th class="p-4 font-semibold">Ghi chú chi tiết từ chuyên gia UX</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr>
+                                <td class="p-4 font-semibold text-slate-900">Thu thập thông tin (Multi-turn)</td>
+                                <td class="p-4 text-center"><span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded">✅ TỐT</span></td>
+                                <td class="p-4 text-slate-600 text-xs">Form-filling flow thiết kế rất mượt và tường minh. Thu thập thông tin phòng hờ trường hợp thiếu dữ kiện đầu vào cực kỳ khoa học.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-slate-900">Xử lý intent đơn lẻ</td>
+                                <td class="p-4 text-center"><span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded">✅ TỐT</span></td>
+                                <td class="p-4 text-slate-600 text-xs">Đối với các chủ đề như Ưu đãi hay Thủ tục hàng không, hệ thống trả về thông tin đầy đủ, mạch lạc, dễ hiểu.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-slate-900">Safety / Prompt injection</td>
+                                <td class="p-4 text-center"><span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded">✅ TỐT</span></td>
+                                <td class="p-4 text-slate-600 text-xs">Bộ lọc từ ngữ và kiểm soát an ninh hoạt động xuất sắc. Từ chối lịch sự, giữ vững lập trường trung lập và bẻ lái về nghiệp vụ cốt lõi thành công.</td>
+                            </tr>
+                            <tr class="bg-rose-50/40">
+                                <td class="p-4 font-semibold text-rose-950">Fallback khi API gặp lỗi</td>
+                                <td class="p-4 text-center"><span class="bg-rose-100 text-rose-800 text-xs font-bold px-2 py-1 rounded">❌ YẾU</span></td>
+                                <td class="p-4 text-rose-900 text-xs font-medium">Hoàn toàn trống rỗng kịch bản ứng phó. Đẩy khách hàng vào ngõ cụt "Dead Loop" không lối thoát tự nhiên.</td>
+                            </tr>
+                            <tr class="bg-rose-50/40">
+                                <td class="p-4 font-semibold text-rose-950">Nhận diện Intent Shift</td>
+                                <td class="p-4 text-center"><span class="bg-rose-100 text-rose-800 text-xs font-bold px-2 py-1 rounded">❌ YẾU</span></td>
+                                <td class="p-4 text-rose-900 text-xs font-medium">Bỏ qua hoàn toàn các tín hiệu thay đổi ý định của khách hàng một khi chatbot đang mắc kẹt trong trạng thái báo lỗi (error state).</td>
+                            </tr>
+                            <tr class="bg-rose-50/40">
+                                <td class="p-4 font-semibold text-rose-950">Handoff tự nhiên</td>
+                                <td class="p-4 text-center"><span class="bg-rose-100 text-rose-800 text-xs font-bold px-2 py-1 rounded">❌ THIẾU</span></td>
+                                <td class="p-4 text-rose-900 text-xs font-medium">Thiếu vắng hoàn toàn nút bấm hoặc đề xuất tự động giúp khách liên hệ với tổng đài viên hoặc nhân viên hỗ trợ trực tiếp.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-semibold text-slate-900">Tính nhất quán hệ thống</td>
+                                <td class="p-4 text-center"><span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded">⚠️ TRUNG BÌNH</span></td>
+                                <td class="p-4 text-slate-600 text-xs">Bất nhất về mặt phân phối dữ liệu: Luồng hỏi ưu đãi (Q3) thì hiển thị được mức giá tĩnh tham khảo, còn luồng tìm kiếm lỗi (Q1) thì giấu nhẹm đi.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 p-4 bg-teal-800 text-white rounded-xl flex items-center gap-4 shadow-md">
+                    <div class="bg-white/10 p-3 rounded-full hidden sm:block"><i data-lucide="check-square" class="w-6 h-6 text-cyan-300"></i></div>
+                    <div class="text-sm">
+                        <span class="block font-bold text-base text-cyan-300">Khuyến nghị hành động ngay (Actionable Next Steps)</span>
+                        Ưu tiên phân bổ nguồn lực kỹ thuật lập tức sửa đổi: <strong class="underline decoration-cyan-400 decoration-2">Intent re-classification sau trạng thái lỗi API</strong> kết hợp cấu trúc lại mẫu tin nhắn <strong class="underline decoration-cyan-400 decoration-2">Fallback bằng giá vé tham khảo tĩnh</strong>.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        function switchTab(tabId) {
+            // Hide all contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Deactivate all tab buttons styling
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-teal-800', 'text-white', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'hover:text-slate-900');
+            });
+
+            // Show current tab content
+            document.getElementById(tabId).classList.add('active');
+
+            // Style active button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.add('bg-teal-800', 'text-white', 'shadow-sm');
+            activeBtn.classList.remove('text-slate-600', 'hover:text-slate-900');
+        }
+    </script>
+</body>
+</html>
