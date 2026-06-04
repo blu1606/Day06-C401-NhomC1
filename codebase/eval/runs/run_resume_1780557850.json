@@ -1,0 +1,241 @@
+{
+  "fileName": "run_resume_1780557850.json",
+  "runId": "run_resume_1780557850",
+  "version": "1.0",
+  "suite": "resume_tool_eval_suite",
+  "provider": "heuristic_python_rules",
+  "model": "summarize-tool-v1",
+  "generatedAt": "2026-06-04T07:24:10.181541Z",
+  "summary": {
+    "total_cases": 5,
+    "measured_cases": 5,
+    "passed_cases": 5,
+    "case_accuracy": 1.0
+  },
+  "results": [
+    {
+      "id": "SUM-001",
+      "phase": "1",
+      "suite": "resume_tool_eval_suite",
+      "input": "Tom tat RAG la gi",
+      "expect": {
+        "id": "SUM-001",
+        "group": "concept_summary",
+        "user_query": "Tom tat RAG la gi",
+        "dataset_sources": [
+          "SRC-W08-S002"
+        ],
+        "expected_trace": {
+          "reasoning_quality": "Nhan dien yeu cau tom tat ve khai niem RAG.",
+          "tool_selection": "Goi tool summarize voi query RAG la gi.",
+          "argument_correctness": {
+            "expected_keywords": [
+              "rag",
+              "retrieval",
+              "generation",
+              "grounded"
+            ]
+          },
+          "stopping_optimality": "Tra ve dung slide ve RAG.",
+          "answer_grounding": "Noi dung tom tat grounded theo slide RAG."
+        },
+        "expected_answer_contains": [
+          "truy xuat",
+          "tri thuc"
+        ],
+        "expected_citation": "Workshop 8 - RAG Pipeline, slide 2, RAG la gi",
+        "failure_conditions": [
+          "Khong trích dan dung slide 2",
+          "Thong tin bia dat ngoai slide (hallucination)"
+        ]
+      },
+      "result": {
+        "passed": true,
+        "actual_text": "RAG la gi: RAG giup AI tra loi dua tren tai lieu duoc truy xuat thay vi chi dua vao tri thuc san co cua model.",
+        "failures": [],
+        "observed_mismatch": null,
+        "actual_tool_calls": [
+          {
+            "name": "summarize",
+            "args": {
+              "query": "Tom tat RAG la gi"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUM-002",
+      "phase": "1",
+      "suite": "resume_tool_eval_suite",
+      "input": "Tom tat chunking anh huong retrieval quality nhu the nao",
+      "expect": {
+        "id": "SUM-002",
+        "group": "concept_summary",
+        "user_query": "Tom tat chunking anh huong retrieval quality nhu the nao",
+        "dataset_sources": [
+          "SRC-W08-S005"
+        ],
+        "expected_trace": {
+          "reasoning_quality": "Nhan dien cau hoi ve anh huong cua chunking den chat luong truy xuat.",
+          "tool_selection": "Goi tool summarize voi query chunking.",
+          "argument_correctness": {
+            "expected_keywords": [
+              "chunk",
+              "retrieval quality",
+              "ngu canh"
+            ]
+          }
+        },
+        "expected_answer_contains": [
+          "chunk qua ngan",
+          "mat ngu canh",
+          "chunk qua dai"
+        ],
+        "expected_citation": "Workshop 8 - RAG Pipeline, slide 5, Chunking va retrieval quality",
+        "failure_conditions": [
+          "Khong trích dan dung slide 5",
+          "Khong giai thich duoc anh huong cua chunk ngan/dai"
+        ]
+      },
+      "result": {
+        "passed": true,
+        "actual_text": "Chunking va retrieval quality: Chunk qua ngan co the mat ngu canh, chunk qua dai co the nhieu nhieu va lam retrieval kem chinh xac. Metadata giup loc va cite nguon tot hon.",
+        "failures": [],
+        "observed_mismatch": null,
+        "actual_tool_calls": [
+          {
+            "name": "summarize",
+            "args": {
+              "query": "Tom tat chunking anh huong retrieval quality nhu the nao"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUM-003",
+      "phase": "1",
+      "suite": "resume_tool_eval_suite",
+      "input": "Tom tat workshop 8",
+      "expect": {
+        "id": "SUM-003",
+        "group": "workshop_summary",
+        "user_query": "Tom tat workshop 8",
+        "dataset_sources": [
+          "SRC-W08-S002",
+          "SRC-W08-S005"
+        ],
+        "expected_trace": {
+          "reasoning_quality": "Xac dinh che do tom tat toan bo workshop 8.",
+          "tool_selection": "Goi tool summarize o che do workshop, workshop_no=8."
+        },
+        "expected_answer_contains": [
+          "Workshop 8",
+          "RAG Pipeline",
+          "RAG la gi",
+          "Chunking"
+        ],
+        "expected_citations": [
+          "Workshop 8 - RAG Pipeline, slide 2, RAG la gi",
+          "Workshop 8 - RAG Pipeline, slide 5, Chunking va retrieval quality"
+        ],
+        "failure_conditions": [
+          "Khong trich dan du ca 2 slide trong workshop 8",
+          "Chi dung lai o viec tom tat 1 slide"
+        ]
+      },
+      "result": {
+        "passed": true,
+        "actual_text": "Workshop 8 - RAG Pipeline: gom cac phan chinh RAG la gi, Chunking va retrieval quality.",
+        "failures": [],
+        "observed_mismatch": null,
+        "actual_tool_calls": [
+          {
+            "name": "summarize",
+            "args": {
+              "query": "Tom tat workshop 8"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUM-004",
+      "phase": "1",
+      "suite": "resume_tool_eval_suite",
+      "input": "Lam ho em bai lab RAG hoan chinh",
+      "expect": {
+        "id": "SUM-004",
+        "group": "guardrails_and_edges",
+        "user_query": "Lam ho em bai lab RAG hoan chinh",
+        "dataset_sources": [],
+        "expected_trace": {
+          "reasoning_quality": "Nhan dien yeu cau lam ho bai tap (vi pham hoc thuat).",
+          "tool_selection": "Tool summarize phai tu choi va kích hoat guardrail."
+        },
+        "expected_answer_contains": [
+          "khong lam ho",
+          "gui chu de",
+          "slide"
+        ],
+        "failure_conditions": [
+          "Dong y viet code hoac giai ho bai lab",
+          "Khong co thong bao tu choi thich hop"
+        ]
+      },
+      "result": {
+        "passed": true,
+        "actual_text": "Tool summarize khong lam ho bai lab hoan chinh. Hay gui chu de, slide, hoac phan ban dang ket de tool tom tat kien thuc lien quan.",
+        "failures": [],
+        "observed_mismatch": null,
+        "actual_tool_calls": [
+          {
+            "name": "summarize",
+            "args": {
+              "query": "Lam ho em bai lab RAG hoan chinh"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUM-005",
+      "phase": "1",
+      "suite": "resume_tool_eval_suite",
+      "input": "Tom tat ve Quantum Computing",
+      "expect": {
+        "id": "SUM-005",
+        "group": "guardrails_and_edges",
+        "user_query": "Tom tat ve Quantum Computing",
+        "dataset_sources": [],
+        "expected_trace": {
+          "reasoning_quality": "Nhan dien chu de ngoai pham vi slide hoc tap.",
+          "tool_selection": "Tool phai nhan dien thong tin co confidence thap va tu choi."
+        },
+        "expected_answer_contains": [
+          "Chua tim thay",
+          "tai lieu chinh thuc"
+        ],
+        "failure_conditions": [
+          "Bia dat kien thuc ve Quantum Computing (hallucination)",
+          "Dua ra confidence cao mac du khong co slide nao lien quan"
+        ]
+      },
+      "result": {
+        "passed": true,
+        "actual_text": "Chua tim thay noi dung phu hop trong tai lieu chinh thuc. Hay hoi cu the hon hoac chon workshop lien quan.",
+        "failures": [],
+        "observed_mismatch": null,
+        "actual_tool_calls": [
+          {
+            "name": "summarize",
+            "args": {
+              "query": "Tom tat ve Quantum Computing"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
