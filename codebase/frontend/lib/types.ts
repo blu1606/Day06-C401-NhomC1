@@ -52,6 +52,11 @@ export type ChatMessage = {
   timestamp: number;
   thinkingSteps?: SimulatedStep[];
   isSimulating?: boolean;
+  slidePage?: number;
+  slidePages?: number[];
+  citationLabel?: string;
+  feedbackLogged?: boolean;
+  isOfflineFallback?: boolean;
 };
 
 export type SimulatedStep = {
@@ -60,7 +65,7 @@ export type SimulatedStep = {
   kind: "thought" | "tool" | "observation" | "final" | "error";
   content: string;
   toolName?: string;
-  status: "pending" | "running" | "completed";
+  status: "pending" | "running" | "completed" | "success" | "failed" | "timeout";
   durationMs?: number;
   input?: unknown;
   output?: unknown;

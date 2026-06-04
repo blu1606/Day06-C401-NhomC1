@@ -9,10 +9,11 @@ import { VersionLogViewer } from "@/components/version-log-viewer";
 import { EvalCasesViewer } from "@/components/eval-cases-viewer";
 import { PromptToolsViewer } from "@/components/prompt-tools-viewer";
 import { RunsViewer } from "@/components/runs-viewer";
+import { StudentDashboard } from "@/components/student-dashboard";
 
 export function StudentsPageContent() {
   const searchParams = useSearchParams();
-  const [tab, setTab] = useState<string>("version-logs");
+  const [tab, setTab] = useState<string>("student-analytics");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const [isResizingSidebar, setIsResizingSidebar] = useState(false);
@@ -55,13 +56,17 @@ export function StudentsPageContent() {
       setTab("prompt-tools");
     } else if (tabParam === "runs") {
       setTab("runs");
+    } else if (tabParam === "student-analytics") {
+      setTab("student-analytics");
     } else {
-      setTab("version-logs");
+      setTab("student-analytics");
     }
   }, [searchParams]);
 
   const renderActiveView = () => {
     switch (tab) {
+      case "student-analytics":
+        return <StudentDashboard activeSessionId="session-cohort" />;
       case "version-logs":
         return <VersionLogViewer />;
       case "eval-cases":
@@ -71,22 +76,7 @@ export function StudentsPageContent() {
       case "runs":
         return <RunsViewer />;
       default:
-        return <VersionLogViewer />;
-    }
-  };
-
-  const getTitle = () => {
-    switch (tab) {
-      case "version-logs":
-        return "Version Optimization Logs (CSV)";
-      case "eval-cases":
-        return "Evaluation Datasets Cases (JSON)";
-      case "prompt-tools":
-        return "System Prompt & Tools Configuration";
-      case "runs":
-        return "Model Test Runs Execution Reports";
-      default:
-        return "Optimization & Evaluation Terminal";
+        return <StudentDashboard activeSessionId="session-cohort" />;
     }
   };
 
@@ -96,27 +86,6 @@ export function StudentsPageContent() {
         isResizingSidebar ? "select-none" : ""
       }`}
     >
-      {/* Header */}
-      <header className="flex items-center justify-between rounded-2xl border border-transparent bg-[#3c3a39] px-6 py-4 shadow-md">
-        <div>
-          <p className="font-mono text-xs font-semibold uppercase tracking-[0.22em] text-[#ff7300]">
-            /research-agent-lab-terminal
-          </p>
-          <h1 className="mt-1 text-xl font-bold tracking-tight text-[#fefcf5] md:text-2xl">
-            {getTitle()}
-          </h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/u/0/app"
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-xs text-[#eaeae2] hover:bg-white/10 hover:text-white transition-all shadow-sm"
-          >
-            <MessageSquare className="size-4 text-[#79deeb]" />
-            /back-to-chat
-          </Link>
-        </div>
-      </header>
-
       {/* Main Collapsible Layout */}
       <section className="flex min-h-0 flex-1 gap-1 transition-all duration-300">
         {/* COLUMN 1: COLLAPSIBLE UNIFIED SIDEBAR */}
@@ -144,8 +113,44 @@ export function StudentsPageContent() {
         )}
 
         {/* Center Panel (Modular Viewer) */}
-        <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-          {renderActiveView()}
+        <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden gap-4">
+          {/* Tab Navigation Bar */}
+          <div className="flex items-center justify-between bg-[#fffcf6] border border-[rgba(11,9,7,0.12)] p-2 rounded-2xl shadow-sm shrink-0">
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none font-mono text-[10px] uppercase font-bold">
+              {[
+                { id: "student-analytics", label: "Student Analytics" },
+                { id: "version-logs", label: "Version Logs" },
+                { id: "eval-cases", label: "Evaluation Cases" },
+                { id: "prompt-tools", label: "Prompt & Tools" },
+                { id: "runs", label: "Test Runs" },
+              ].map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/u/0/students?tab=${item.id}`}
+                  onClick={() => setTab(item.id)}
+                  className={`rounded-xl px-4 py-2 transition-all text-center whitespace-nowrap cursor-pointer ${
+                    tab === item.id
+                      ? "bg-[#3c3a39] text-[#fefcf5] shadow-xs"
+                      : "text-[rgba(11,9,7,0.5)] hover:text-[#3c3a39] hover:bg-[#eaeae2]/30"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+            
+            <Link
+              href="/u/0/app"
+              className="flex items-center gap-1.5 rounded-xl border border-[rgba(11,9,7,0.15)] bg-[#fffcf6] px-4 py-2 font-mono text-[10px] uppercase font-bold text-[#3c3a39] hover:bg-[#eaeae2]/30 transition-all shadow-xs shrink-0"
+            >
+              <MessageSquare className="size-3.5 text-[#ff7300]" />
+              Back to Chat
+            </Link>
+          </div>
+
+          <div className="flex-1 overflow-auto">
+            {renderActiveView()}
+          </div>
         </div>
       </section>
     </main>
