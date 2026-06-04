@@ -32,37 +32,59 @@ MAX_KEY_POINTS = 3
 
 def summarize(
     query: str = "",
+    content: str = "",
+    detail_level: str = "brief",
+    retrieval: Any | None = None,
     mode: str = "auto",
     workshop_no: int | None = None,
     max_sources: int = 3,
 ) -> dict[str, Any]:
     try:
+        if content and not query and not callable(retrieval):
+            return _summarize_content(content, detail_level=detail_level)
+
+        query = query or content
         if _is_lab_answer_request(query):
-            return _guardrail_response()
+            return _with_contract_fields(_guardrail_response(), detail_level=detail_level)
+
+        if callable(retrieval):
+            retrieved_result = _summarize_from_retrieval(
+                query=query,
+                retrieval=retrieval,
+                detail_level=detail_level,
+            )
+            if retrieved_result is not None:
+                return retrieved_result
 
         sources = _load_sources(DATA_PATH)
         resolved_workshop_no = workshop_no or _extract_workshop_no(query)
         resolved_mode = _resolve_mode(mode, query, resolved_workshop_no)
 
         if resolved_mode == "workshop":
-            return _summarize_workshop(
-                query=query,
-                sources=sources,
-                workshop_no=resolved_workshop_no,
-                max_sources=max_sources,
+            return _with_contract_fields(
+                _summarize_workshop(
+                    query=query,
+                    sources=sources,
+                    workshop_no=resolved_workshop_no,
+                    max_sources=max_sources,
+                ),
+                detail_level=detail_level,
             )
 
         ranked = _rank_sources(query, sources, workshop_no=workshop_no)
         selected = ranked[:1]
 
         if not selected or _is_low_confidence_match(selected[0]):
-            return _low_confidence_response(query)
+            return _with_contract_fields(
+                _low_confidence_response(query),
+                detail_level=detail_level,
+            )
 
         confidence = "high" if selected[0]["score"] >= HIGH_CONFIDENCE_SCORE else "low"
         citations = [_citation(item["source"], query=query) for item in selected]
         primary = selected[0]["source"]
 
-        return {
+        return _with_contract_fields({
             "tool": "summarize",
             "query": query,
             "mode": "concept",
@@ -78,9 +100,102 @@ def summarize(
                 }
                 for item in selected
             ],
-        }
+        }, detail_level=detail_level)
     except Exception as exc:
         return {"tool": "summarize", "error": type(exc).__name__, "message": str(exc)}
+
+
+def _summarize_content(content: str, detail_level: str = "brief") -> dict[str, Any]:
+    chunks = _chunk_text(content)
+    if not chunks:
+        return _with_contract_fields(
+            _low_confidence_response(""),
+            detail_level=detail_level,
+        )
+
+    max_points = 5 if detail_level == "detailed" else 3
+    key_points = [_trim_text(chunk) for chunk in chunks[:max_points]]
+    result = {
+        "tool": "summarize",
+        "query": "",
+        "mode": "content",
+        "confidence": "high",
+        "summary": key_points[0],
+        "key_points": key_points,
+        "citations": [],
+        "citation": "provided content",
+        "matches": [],
+    }
+    return _with_contract_fields(result, detail_level=detail_level)
+
+
+def _summarize_from_retrieval(
+    query: str,
+    retrieval: Any,
+    detail_level: str = "brief",
+) -> dict[str, Any] | None:
+    payload = retrieval(query)
+    source = _source_from_retrieval_payload(payload)
+    if source is None:
+        return None
+
+    citations = [_citation(source, query=query)]
+    result = {
+        "tool": "summarize",
+        "query": query,
+        "mode": "concept",
+        "confidence": "high",
+        "summary": _summary(source, query=query),
+        "key_points": _key_points(source, query=query),
+        "citations": citations,
+        "matches": [
+            {
+                "source_id": source.get("source_id"),
+                "score": 0,
+                "matched_terms": sorted(terms(query)),
+            }
+        ],
+    }
+    return _with_contract_fields(result, detail_level=detail_level)
+
+
+def _source_from_retrieval_payload(payload: Any) -> dict[str, Any] | None:
+    if not isinstance(payload, dict):
+        return None
+
+    data = payload.get("data")
+    if not isinstance(data, dict):
+        return None
+
+    source_id = data.get("source_id")
+    section_title = data.get("section_title") or ""
+    summary = data.get("summary") or ""
+    source_excerpt = data.get("source_excerpt") or ""
+    citation_label = data.get("citation_label") or payload.get("citation") or ""
+
+    if not source_id or _looks_like_missing_retrieval(section_title, summary, source_excerpt):
+        return None
+
+    return {
+        **data,
+        "section_title": section_title,
+        "summary": summary,
+        "source_excerpt": source_excerpt,
+        "learning_objective": data.get("learning_objective") or summary,
+        "skill_tags": data.get("skill_tags") or [],
+        "citation_label": citation_label,
+    }
+
+
+def _looks_like_missing_retrieval(*values: str) -> bool:
+    folded = fold_text(" ".join(values))
+    missing_markers = [
+        "khong tim thay",
+        "khong the tai du lieu",
+        "loi doc du lieu",
+        "loi he thong",
+    ]
+    return any(marker in folded for marker in missing_markers)
 
 
 def _summarize_workshop(
@@ -246,6 +361,44 @@ def _citation(source: dict[str, Any], query: str = "") -> dict[str, Any]:
         "citation_label": source["citation_label"],
         "source_excerpt": excerpt,
     }
+
+
+def _with_contract_fields(
+    result: dict[str, Any],
+    detail_level: str = "brief",
+) -> dict[str, Any]:
+    citations = result.get("citations") or []
+    result["citation"] = result.get("citation") or _citation_string(citations)
+    result["keywords"] = _keywords_from_result(result)
+
+    if detail_level == "brief" and len(result.get("key_points", [])) > 3:
+        result["key_points"] = result["key_points"][:3]
+
+    return result
+
+
+def _citation_string(citations: list[dict[str, Any]]) -> str:
+    return "; ".join(
+        citation.get("citation_label", "")
+        for citation in citations
+        if citation.get("citation_label")
+    )
+
+
+def _keywords_from_result(result: dict[str, Any], max_keywords: int = 8) -> list[str]:
+    text = " ".join(
+        [
+            result.get("query", ""),
+            result.get("summary", ""),
+            " ".join(result.get("key_points", [])),
+        ]
+    )
+    allowed_terms = terms(text)
+    keywords: list[str] = []
+    for token in re.findall(r"[a-z0-9]+", fold_text(text)):
+        if token in allowed_terms and token not in keywords:
+            keywords.append(token)
+    return keywords[:max_keywords]
 
 
 def _long_text(source: dict[str, Any]) -> str:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import unittest
 
+from tools.retrieval_function import retrieval
 from tools.summarize.tool import _key_points, _summary, summarize
 
 
@@ -88,6 +89,37 @@ class SummarizeToolTest(unittest.TestCase):
         self.assertIn("Chunking", summary)
         self.assertIn("retrieval quality", summary)
         self.assertLessEqual(len(key_points), 3)
+
+    def test_contract_content_input_returns_required_fields(self) -> None:
+        result = summarize(
+            content=(
+                "RAG ket hop retrieval voi generation. "
+                "Retrieval lay context lien quan tu tai lieu. "
+                "Generation dung context de tao cau tra loi grounded."
+            ),
+            detail_level="brief",
+        )
+
+        self.assertEqual(result["mode"], "content")
+        self.assertIn("summary", result)
+        self.assertIn("key_points", result)
+        self.assertIn("keywords", result)
+        self.assertIn("citation", result)
+        self.assertEqual(result["citation"], "provided content")
+
+    def test_retrieval_result_returns_contract_fields(self) -> None:
+        result = summarize(query="RAG la gi")
+
+        self.assertIn("keywords", result)
+        self.assertIn("citation", result)
+        self.assertIn("Workshop 8", result["citation"])
+
+    def test_contract_retrieval_function_is_used_for_content_lookup(self) -> None:
+        result = summarize(content="Error routing la gi", retrieval=retrieval)
+
+        self.assertEqual(result["confidence"], "high")
+        self.assertEqual(result["citations"][0]["source_id"], "DAY05-S012")
+        self.assertIn("Day 05", result["citation"])
 
 
 if __name__ == "__main__":
