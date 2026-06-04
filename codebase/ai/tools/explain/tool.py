@@ -144,36 +144,4 @@ JSON response:"""
     }
 
 
-if __name__ == "__main__":
-    print("--- TESTING EXPLAIN TOOL LOCALLY ---")
-    
-    # Mock retrieval function matching the contract
-    def mock_retrieval(query_content: str) -> dict:
-        return {
-            "data": [
-                {
-                    "source_id": "SRC-W08-S002",
-                    "slide_no": 2,
-                    "section_title": "RAG la gi",
-                    "summary": "RAG giup AI tra loi dua tren tai lieu duoc truy xuat thay vi chi dua vao tri thuc san co cua model.",
-                    "source_excerpt": "RAG = retrieve relevant context + generate grounded answer.",
-                    "citation_label": "Workshop 8 - RAG Pipeline, slide 2, RAG la gi"
-                }
-            ],
-            "citation": "Workshop 8 - RAG Pipeline, slide 2, RAG la gi"
-        }
-        
-    test_query = "RAG là gì?"
-    print(f"Query: '{test_query}'\n")
-    
-    result = explain(test_query, mock_retrieval)
-    print("--- Tool Output ---")
-    print(f"Explanation:\n{result['explanation']}\n")
-    print(f"Citation: {result['citation']}\n")
-    
-    # Validation checks
-    assert len(result["explanation"]) > 10, "Explanation should be a non-empty string"
-    assert "### Diễn giải" in result["explanation"] and "### Ví dụ minh họa" in result["explanation"], "Explanation should contain formatted markdown sections"
-    assert result["citation"] == "Workshop 8 - RAG Pipeline, slide 2, RAG la gi", "Citation should match retrieved label"
-    
-    print("Local test passed successfully!")
+
