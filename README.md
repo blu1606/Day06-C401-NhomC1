@@ -4,19 +4,12 @@
 
 ---
 
-## Cách nộp bài
-
-**Đại diện nhóm tạo MỘT repo nhóm**, đặt tên:
-
-```
-Day06-Lop-NhomXX
-```
-
-Ví dụ: `Day06-C401-Nhom03`
-
-- **README của repo nhóm phải liệt kê đủ thành viên** — mỗi người gồm **mã học viên + họ và tên**.
-- Đại diện nhóm nộp **link repo** lên LMS. **Hạn nộp: 23:59 ngày 04/06/2026.**
-- Mỗi thành viên cần **ít nhất một commit thực chất** trong repo (không commit = mất điểm cá nhân).
+1. Hồ Tất Bảo Hoàng - 2A202600699
+2. Le Duc Viet-2A202600959
+3. Nguyễn Vũ Trọng - 2A202600960
+4. Nguyễn Phương Nam - 2A202600962
+5. Bùi Văn Tuân - 2A202601006
+6. Đào Tất Thắng - 2A202600540
 
 ### Cấu trúc repo nhóm
 
@@ -38,22 +31,6 @@ Day06-Lop-NhomXX/
 | **13:00** | Checkpoint 2 | **Lắp được AI vào ít nhất 1 flow** |
 | **15:30** | Checkpoint 3 | **Chuẩn bị xong tài liệu demo + slide** |
 | **16:00** | Demo round | Trình bày trong zone, 10 phút/nhóm |
-
----
-
-## Tracks
-
-Mỗi nhóm chọn một lĩnh vực, lấy một app thật trong đó để soi và cải tiến:
-
-| Track | App thật gợi ý |
-|-------|----------------|
-| **Learning OS** (Vin AI Thực Chiến) | LMS khóa học, Discord lớp |
-| **Travel & Hospitality** | Vinpearl, Sun World / SunGroup |
-| **Food & Local Delivery** | ShopeeFood, GrabFood, BeFood, Xanh SM Ngon |
-| **Personal Finance** | MoMo, ZaloPay, app ngân hàng |
-| **Healthcare** | Vinmec, Long Châu, Pharmacity |
-
-> Các nhóm **cùng track** ngồi **cùng một zone** khi demo.
 
 ---
 
