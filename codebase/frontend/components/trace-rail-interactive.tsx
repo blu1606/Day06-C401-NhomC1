@@ -79,7 +79,7 @@ export function TraceRailInteractive({
   const latestTurn = liveTranscript?.turns?.[liveTranscript.turns.length - 1];
 
   // Render live transcript telemetry if active
-  if (liveTranscript) {
+  if (liveTranscript && !customTrace) {
     return (
       <aside className="flex flex-col rounded-2xl border border-[rgba(11,9,7,0.12)] bg-[#fffcf6] p-4 shadow-sm h-full w-full lg:min-h-0 overflow-auto">
         {/* Header */}

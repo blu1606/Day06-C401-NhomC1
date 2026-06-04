@@ -71,6 +71,7 @@ class ToolExecutorTests(unittest.TestCase):
 
         self.assertFalse(missing.ok)
         self.assertIn("not found", missing.observation)
+        self.assertIn("Available tools: placeholder", missing.observation)
         self.assertFalse(missing_func.ok)
         self.assertIn("missing function", missing_func.observation)
 

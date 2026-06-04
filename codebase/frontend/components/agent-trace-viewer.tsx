@@ -158,8 +158,8 @@ export function AgentTraceViewer() {
             </div>
 
             {/* Panel Tab View content */}
-            <div className="flex-1 min-h-0">
-              {rightTab === "chat" ? (
+            <div className="flex-1 min-h-0 relative h-full">
+              <div className={`h-full ${rightTab === "chat" ? "block" : "hidden"}`}>
                 <ChatPanelInteractive
                   activeSessionId={activeSessionId}
                   onTraceUpdate={setCustomTrace}
@@ -168,9 +168,10 @@ export function AgentTraceViewer() {
                   checkpointPage={checkpointPage}
                   setCheckpointPage={setCheckpointPage}
                 />
-              ) : (
+              </div>
+              <div className={`h-full ${rightTab === "telemetry" ? "block" : "hidden"}`}>
                 <TraceRailInteractive activeSessionId={activeSessionId} customTrace={customTrace} />
-              )}
+              </div>
             </div>
           </div>
         )}

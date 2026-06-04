@@ -252,9 +252,10 @@ class ToolExecutor:
     def execute(self, tool_name: str | None, args: Any) -> ToolExecutionResult:
         started = time.perf_counter()
         if not tool_name or tool_name not in self.tools:
+            available = ", ".join(sorted(self.tools.keys()))
             return ToolExecutionResult(
                 ok=False,
-                observation=f"Tool not found: {tool_name}",
+                observation=f"Tool not found: {tool_name}. Available tools: {available}",
                 elapsed_ms=_elapsed_ms(started),
                 error="tool_not_found",
             )
