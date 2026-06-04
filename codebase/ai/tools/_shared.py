@@ -3,9 +3,14 @@ from __future__ import annotations
 import re
 import unicodedata
 from pathlib import Path
+from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[3]
+
+
+def err(tool: str, exc: Exception) -> dict[str, Any]:
+    return {"tool": tool, "error": type(exc).__name__, "message": str(exc)}
 
 
 def fold_text(text: str) -> str:
@@ -16,49 +21,11 @@ def fold_text(text: str) -> str:
 
 def terms(text: str) -> set[str]:
     stopwords = {
-        "a",
-        "an",
-        "and",
-        "anh",
-        "are",
-        "as",
-        "at",
-        "ban",
-        "by",
-        "can",
-        "cho",
-        "co",
-        "cua",
-        "duoc",
-        "em",
-        "for",
-        "from",
-        "gi",
-        "in",
-        "is",
-        "khi",
-        "la",
-        "lam",
-        "minh",
-        "mot",
-        "nao",
-        "of",
-        "on",
-        "or",
-        "the",
-        "the",
-        "theo",
-        "thi",
-        "to",
-        "tom",
-        "tat",
-        "trong",
-        "va",
-        "ve",
-        "voi",
-        "sau",
-        "doi",
-        "app",
+        "a", "an", "and", "anh", "are", "as", "at", "ban", "bao", "by",
+        "can", "cho", "co", "cua", "duoc", "em", "for", "from", "gi", "giup",
+        "in", "is", "khi", "la", "lam", "minh", "mot", "nao", "nay", "nen",
+        "of", "on", "or", "the", "theo", "thi", "to", "tom", "tat",
+        "trong", "va", "ve", "voi", "sau", "doi", "app",
     }
     folded = fold_text(text)
     return {
