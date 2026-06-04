@@ -29,8 +29,7 @@
 - Đưa khối suy nghĩ `/reasoning-trail` và chi tiết gọi tool về dạng **accordion tối giản không viền, mặc định ẩn (collapse)**, thụt lề bằng viền trái mỏng.
 - Thu nhỏ các khối tham số JSON gọi Tool (`JsonBlock`) xuống cỡ chữ `text-[9px]` và giới hạn chiều cao tối đa.
 
-### 5. Thiết lập giải pháp Mất kết nối (Offline Fallback)
+### 5. Thiết lập giải pháp Mất kết nối (Offline Fallback & Local Backend)
 - **Đã triển khai thực tế và kiểm thử thành công**:
-  - Tích hợp `AbortController` tự động phát hiện mất mạng, timeout API sau 5 giây hoặc lỗi server (`5xx`).
-  - Tự động chuyển đổi sang bộ máy RAG cục bộ (Offline RAG KB) dựa trên file dữ liệu [day05_ai_tutor_slide_sources.json](file:///d:/CODE/AITHUCCHIEN/LABS/Batch02-Day06-AI-Product-Hackathon/codebase/frontend/data/day05_ai_tutor_slide_sources.json) để khớp các câu hỏi phổ biến (về Bất định, Trụ cột thiết kế, Error routing, Vibe coding...).
-  - Thiết kế và hiển thị các thông báo giao diện tinh tế (banner vàng gợi ý câu hỏi khi ngoại tuyến, dòng chú thích nguồn dưới tin nhắn và nhãn trạng thái kết nối nhấp nháy trên Header).
+  - **Lớp 1 (Frontend to Backend)**: Tích hợp `AbortController` tự động phát hiện mất mạng, timeout API sau 5 giây hoặc lỗi server (`5xx`), tự động chuyển đổi sang bộ máy RAG cục bộ (Offline RAG KB) trên Client dựa trên file [day05_ai_tutor_slide_sources.json](file:///d:/CODE/AITHUCCHIEN/LABS/Batch02-Day06-AI-Product-Hackathon/codebase/frontend/data/day05_ai_tutor_slide_sources.json) và hiển thị banner ngoại tuyến màu vàng cùng chỉ báo kết nối trên Header.
+  - **Lớp 2 (Backend to External AI API)**: Tối ưu hóa backend FastAPI chạy **100% offline/local** sử dụng thuật toán so khớp từ khóa và ngữ cảnh tối giản (Lexical Search) trực tiếp trên file cơ sở tri thức JSON thay vì gọi API của bên thứ ba (như OpenAI/Gemini). Thiết kế này giúp triệt tiêu hoàn toàn rủi ro nghẽn mạng hoặc lỗi kết nối với API ngoài của mô hình ngôn ngữ lớn khi thuyết trình demo trực tiếp.

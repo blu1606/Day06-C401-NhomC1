@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 from dotenv import load_dotenv
 from openai import OpenAI
-from codebase.ai.tools._shared import ROOT
+from tools._shared import ROOT
 
 # Load environment variables
 env_path = ROOT / ".env"

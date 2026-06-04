@@ -58,3 +58,7 @@ jobs:
 
       - name: Lint and Compile Check
         run: python -m py_compile codebase/ai/*.py || true
+
+      - name: Run Backend Unit Tests
+        run: uv run python -m unittest discover -s tests
+        working-directory: codebase/ai

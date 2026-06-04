@@ -5,7 +5,7 @@ import json
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
 
-from codebase.ai.tools.explain.tool import explain
+from tools.explain.tool import explain
 
 def test_explain_tool_local():
     print("--- TESTING EXPLAIN TOOL LOCALLY ---")
