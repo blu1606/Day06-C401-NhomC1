@@ -26,6 +26,8 @@ type BackendTraceStep = Omit<SimulatedStep, "status"> & {
 type DiagnoseResponse = {
   summary: string;
   steps?: BackendTraceStep[];
+  slidePage?: number;
+  slidePages?: number[];
 };
 
 const stepIcons = {
@@ -557,6 +559,8 @@ export function ChatPanelInteractive({
                 ...msg,
                 content: data.summary,
                 thinkingSteps: backendSteps,
+                slidePage: data.slidePage,
+                slidePages: data.slidePages,
                 isSimulating: false,
                 isOfflineFallback: false,
               }

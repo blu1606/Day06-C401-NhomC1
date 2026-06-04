@@ -56,6 +56,15 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     summary: str
     steps: List[Dict[str, Any]]
+    slidePage: Optional[int] = None
+    slidePages: Optional[List[int]] = None
+
+def extract_slide_number(source_id: str) -> Optional[int]:
+    if not source_id:
+        return None
+    # Extract number from format like "DAY05-S030" or "S30"
+    match = re.search(r'S0*(\d+)', source_id)
+    return int(match.group(1)) if match else None
 
 def run_real_agent_flow(query: str, provider, provider_name: str) -> Optional[ChatResponse]:
     try:
@@ -155,7 +164,7 @@ async def chat_endpoint(request: ChatRequest):
                 "content": refusal_content,
             }
         ]
-        return ChatResponse(summary=refusal_content, steps=steps)
+        return ChatResponse(summary=refusal_content, steps=steps, slidePage=30, slidePages=[30, 12])
     
     # 1.5 Try running real LLM ReActAgent if keys are configured
     llm_provider, provider_name = get_llm_provider()
@@ -250,7 +259,15 @@ async def chat_endpoint(request: ChatRequest):
         }
     ]
     
-    return ChatResponse(summary=answer, steps=steps)
+    parsed_pages = []
+    for s_id in slide_pages:
+        p_num = extract_slide_number(s_id)
+        if p_num is not None and p_num not in parsed_pages:
+            parsed_pages.append(p_num)
+            
+    slide_page = parsed_pages[0] if parsed_pages else None
+    
+    return ChatResponse(summary=answer, steps=steps, slidePage=slide_page, slidePages=parsed_pages)
 
 @app.get("/api/v1/prompt-tools")
 async def prompt_tools_endpoint():
