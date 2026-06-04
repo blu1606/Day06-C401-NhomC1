@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from tools.summarize.tool import summarize
+from tools.summarize.tool import _key_points, _summary, summarize
 
 
 class SummarizeToolTest(unittest.TestCase):
@@ -64,6 +64,30 @@ class SummarizeToolTest(unittest.TestCase):
 
         self.assertEqual(result["confidence"], "low")
         self.assertEqual(result["citations"], [])
+
+    def test_long_slide_text_uses_relevant_chunks(self) -> None:
+        source = {
+            "source_id": "SRC-LONG",
+            "section_title": "RAG pipeline deep dive",
+            "learning_objective": "Hoc vien hieu pipeline.",
+            "summary": "Slide dai ve nhieu chu de RAG.",
+            "source_excerpt": "RAG pipeline gom nhieu buoc.",
+            "citation_label": "Workshop 8 - RAG Pipeline, slide long",
+            "content": (
+                "Phan dau noi ve lich hoc va cach lam viec nhom. "
+                "Noi dung nay khong lien quan den retrieval quality. "
+                "Chunking anh huong retrieval quality vi chunk qua ngan lam mat ngu canh. "
+                "Chunk qua dai co the dua qua nhieu thong tin nhieu vao retrieval. "
+                "Metadata va overlap giup he thong truy xuat dung ngu canh hon."
+            ),
+        }
+
+        summary = _summary(source, query="chunking retrieval quality")
+        key_points = _key_points(source, query="chunking retrieval quality")
+
+        self.assertIn("Chunking", summary)
+        self.assertIn("retrieval quality", summary)
+        self.assertLessEqual(len(key_points), 3)
 
 
 if __name__ == "__main__":

@@ -19,8 +19,15 @@ FIELD_WEIGHTS = {
     "example_student_questions": 3,
     "summary": 2,
     "source_excerpt": 2,
+    "content": 1,
+    "full_text": 1,
+    "raw_text": 1,
     "workshop_title": 1,
 }
+
+LONG_TEXT_FIELDS = ("content", "full_text", "raw_text", "slide_text", "notes")
+MAX_CHUNK_CHARS = 700
+MAX_KEY_POINTS = 3
 
 
 def summarize(
@@ -52,7 +59,7 @@ def summarize(
             return _low_confidence_response(query)
 
         confidence = "high" if selected[0]["score"] >= HIGH_CONFIDENCE_SCORE else "low"
-        citations = [_citation(item["source"]) for item in selected]
+        citations = [_citation(item["source"], query=query) for item in selected]
         primary = selected[0]["source"]
 
         return {
@@ -60,8 +67,8 @@ def summarize(
             "query": query,
             "mode": "concept",
             "confidence": confidence,
-            "summary": _summary(primary),
-            "key_points": _key_points(primary),
+            "summary": _summary(primary, query=query),
+            "key_points": _key_points(primary, query=query),
             "citations": citations,
             "matches": [
                 {
@@ -101,7 +108,7 @@ def _summarize_workshop(
         "confidence": "high",
         "summary": _workshop_summary(selected_sources),
         "key_points": _workshop_key_points(selected_sources),
-        "citations": [_citation(source) for source in selected_sources],
+        "citations": [_citation(source, query=query) for source in selected_sources],
         "matches": [
             {
                 "source_id": source["source_id"],
@@ -191,11 +198,22 @@ def _field_text(value: Any) -> str:
     return "" if value is None else str(value)
 
 
-def _summary(source: dict[str, Any]) -> str:
+def _summary(source: dict[str, Any], query: str = "") -> str:
+    long_text_points = _relevant_long_text_chunks(source, query=query, max_chunks=1)
+    if long_text_points:
+        return f"{source['section_title']}: {long_text_points[0]}"
     return f"{source['section_title']}: {source['summary']}"
 
 
-def _key_points(source: dict[str, Any]) -> list[str]:
+def _key_points(source: dict[str, Any], query: str = "") -> list[str]:
+    long_text_points = _relevant_long_text_chunks(
+        source,
+        query=query,
+        max_chunks=MAX_KEY_POINTS,
+    )
+    if long_text_points:
+        return long_text_points
+
     return [
         source["learning_objective"],
         source["summary"],
@@ -217,12 +235,90 @@ def _workshop_key_points(sources: list[dict[str, Any]]) -> list[str]:
     ]
 
 
-def _citation(source: dict[str, Any]) -> dict[str, Any]:
+def _citation(source: dict[str, Any], query: str = "") -> dict[str, Any]:
+    excerpt = source["source_excerpt"]
+    long_text_points = _relevant_long_text_chunks(source, query=query, max_chunks=1)
+    if long_text_points:
+        excerpt = long_text_points[0]
+
     return {
         "source_id": source["source_id"],
         "citation_label": source["citation_label"],
-        "source_excerpt": source["source_excerpt"],
+        "source_excerpt": excerpt,
     }
+
+
+def _long_text(source: dict[str, Any]) -> str:
+    parts = [_field_text(source.get(field)) for field in LONG_TEXT_FIELDS]
+    return "\n".join(part for part in parts if part.strip())
+
+
+def _relevant_long_text_chunks(
+    source: dict[str, Any],
+    query: str,
+    max_chunks: int,
+) -> list[str]:
+    chunks = _chunk_text(_long_text(source))
+    if not chunks:
+        return []
+
+    query_terms = terms(query)
+    ranked: list[tuple[int, int, str]] = []
+    for index, chunk in enumerate(chunks):
+        overlap = query_terms & terms(chunk)
+        score = len(overlap)
+        if score or not query_terms:
+            ranked.append((score, -index, chunk))
+
+    if not ranked:
+        ranked = [(0, -index, chunk) for index, chunk in enumerate(chunks)]
+
+    ranked.sort(reverse=True)
+    return [_trim_text(chunk) for _score, _index, chunk in ranked[:max(1, max_chunks)]]
+
+
+def _chunk_text(text: str, max_chars: int = MAX_CHUNK_CHARS) -> list[str]:
+    cleaned = re.sub(r"\s+", " ", text or "").strip()
+    if not cleaned:
+        return []
+
+    sentences = re.split(r"(?<=[.!?。！？])\s+", cleaned)
+    chunks: list[str] = []
+    current = ""
+
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+        if len(sentence) > max_chars:
+            if current:
+                chunks.append(current)
+                current = ""
+            chunks.extend(_split_long_sentence(sentence, max_chars=max_chars))
+            continue
+        if current and len(current) + 1 + len(sentence) > max_chars:
+            chunks.append(current)
+            current = sentence
+        else:
+            current = f"{current} {sentence}".strip()
+
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+def _split_long_sentence(sentence: str, max_chars: int) -> list[str]:
+    chunks = []
+    for start in range(0, len(sentence), max_chars):
+        chunks.append(sentence[start : start + max_chars].strip())
+    return [chunk for chunk in chunks if chunk]
+
+
+def _trim_text(text: str, max_chars: int = 320) -> str:
+    text = re.sub(r"\s+", " ", text or "").strip()
+    if len(text) <= max_chars:
+        return text
+    return text[: max_chars - 3].rstrip() + "..."
 
 
 def _low_confidence_response(query: str) -> dict[str, Any]:
