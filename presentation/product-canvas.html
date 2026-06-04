@@ -279,6 +279,78 @@
             color: #fff;
         }
 
+        .ai-flow-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 18px;
+            margin-top: 16px;
+        }
+
+        .flow-stack {
+            display: grid;
+            gap: 10px;
+        }
+
+        .flow-step {
+            display: grid;
+            grid-template-columns: 42px 1fr;
+            gap: 12px;
+            align-items: start;
+            background: rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+
+        .step-num {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(99, 102, 241, 0.18);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #c7d2fe;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .flow-step h4,
+        .tool-row h4 {
+            color: #fff;
+            font-size: 1.02rem;
+            margin-bottom: 4px;
+        }
+
+        .flow-step p,
+        .tool-row p,
+        .trace-note {
+            font-size: 0.92rem;
+            line-height: 1.45;
+            margin-bottom: 0;
+        }
+
+        .tool-row {
+            border-left: 3px solid var(--secondary);
+            background: rgba(16, 185, 129, 0.06);
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+        }
+
+        .code-chip {
+            display: inline-block;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 0.78rem;
+            color: #dbeafe;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 8px;
+            padding: 3px 7px;
+            margin: 2px 3px 2px 0;
+        }
+
         .team-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -603,6 +675,114 @@
 
             <div class="slide">
                 <div class="content-box">
+                    <h2><span class="icon">🧠</span> AI Runtime Flow</h2>
+                    <p>Luồng AI hiện tại bắt đầu từ prompt của sinh viên, chạy qua API backend, gọi tool local để lấy
+                        nguồn slide, rồi trả answer kèm trace/citation cho frontend.</p>
+
+                    <div class="ai-flow-grid">
+                        <div class="flow-stack">
+                            <div class="flow-step">
+                                <div class="step-num">1</div>
+                                <div>
+                                    <h4>User Prompt → API</h4>
+                                    <p>Frontend gửi <span class="code-chip">POST /api/v1/diagnose</span> với
+                                        <span class="code-chip">session_id</span>, <span class="code-chip">query</span>
+                                        và history nếu có.</p>
+                                </div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="step-num">2</div>
+                                <div>
+                                    <h4>Intent & Guardrail</h4>
+                                    <p>Backend phân tích ý định câu hỏi. Nếu người học hỏi ngoài phạm vi hoặc xin làm
+                                        hộ bài lab, hệ thống chuyển sang fallback an toàn.</p>
+                                </div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="step-num">3</div>
+                                <div>
+                                    <h4>Action: Tool Call</h4>
+                                    <p>Agent/tool layer gọi <span class="code-chip">summarize(query)</span> hoặc các
+                                        tool học liệu như retrieve, classify, generate grounded answer.</p>
+                                </div>
+                            </div>
+                            <div class="flow-step">
+                                <div class="step-num">4</div>
+                                <div>
+                                    <h4>Observation → Final Answer</h4>
+                                    <p>Tool trả matches, confidence và citation. Backend tổng hợp câu trả lời cuối,
+                                        kèm <span class="code-chip">steps[]</span> để UI hiển thị trace.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-inner" style="border-top: 3px solid var(--primary);">
+                            <h4 style="color: var(--primary);">Trace frontend nhận được</h4>
+                            <p class="trace-note"><strong>step-init:</strong> phân tích câu hỏi và mode chạy.</p>
+                            <p class="trace-note"><strong>step-retrieve:</strong> gọi tool, trả slide IDs/citations.</p>
+                            <p class="trace-note"><strong>step-synth:</strong> tổng hợp grounded answer từ nguồn đã
+                                truy xuất.</p>
+                            <div class="quote"
+                                style="font-size: 0.98rem; border-left-color: var(--secondary); margin-top: 14px;">
+                                "Không trả lời bằng trí nhớ trống: mọi câu trả lời học liệu phải đi qua tool và citation."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="content-box">
+                    <h2><span class="icon">🛠️</span> Tool Calls & Prompt Handling</h2>
+                    <p>Các tool được định nghĩa theo contract rõ input/output. Prompt của sinh viên không đi thẳng vào
+                        final answer; nó được chuẩn hóa, retrieve nguồn, chấm confidence rồi mới generate.</p>
+
+                    <div class="ai-flow-grid">
+                        <div>
+                            <div class="tool-row">
+                                <h4>1. Chuẩn hóa prompt</h4>
+                                <p>Tách <span class="code-chip">query</span>, giữ context từ history/session, fold dấu
+                                    tiếng Việt để match ổn định hơn.</p>
+                            </div>
+                            <div class="tool-row">
+                                <h4>2. Retrieve published sources</h4>
+                                <p><span class="code-chip">retrieve_slide_sources</span> / <span
+                                        class="code-chip">summarize</span> quét mock slide JSON theo skill tags, section
+                                    title, example questions, summary và excerpt.</p>
+                            </div>
+                            <div class="tool-row">
+                                <h4>3. Classify confidence</h4>
+                                <p><span class="code-chip">classify_question_scope</span> phân loại in-scope,
+                                    low-confidence hoặc out-of-scope dựa trên retrieved matches.</p>
+                            </div>
+                            <div class="tool-row">
+                                <h4>4. Generate hoặc fallback</h4>
+                                <p>Nguồn mạnh → <span class="code-chip">generate_grounded_answer</span>. Nguồn yếu →
+                                    <span class="code-chip">handle_low_confidence_answer</span>.</p>
+                            </div>
+                        </div>
+
+                        <div class="card-inner" style="border-top: 3px solid var(--secondary);">
+                            <h4 style="color: var(--secondary);">Tool contract đang dùng</h4>
+                            <p><span class="code-chip">summarize</span> trả
+                                <span class="code-chip">summary</span>, <span class="code-chip">key_points</span>,
+                                <span class="code-chip">keywords</span>, <span class="code-chip">citation</span>.
+                            </p>
+                            <p><span class="code-chip">retrieve_slide_sources</span> trả
+                                <span class="code-chip">matches[]</span> gồm sourceId, score, citationLabel, excerpt.
+                            </p>
+                            <p><span class="code-chip">submit_answer_feedback</span> lưu tín hiệu wrong citation /
+                                unclear answer để đưa vào golden test hoặc mentor review.</p>
+                            <div class="message-box" style="margin-top: 16px; text-align: center;">
+                                "Prompt → Tool Input → Observation → Grounded Answer → Feedback loop"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="content-box">
                     <h2><span class="icon">⚖️</span> Automation vs Augmentation</h2>
                     <p>Thiết lập ranh giới (Decision boundary) để kiểm soát quyền thực thi.</p>
                     <div class="grid-2" style="margin-top: 15px;">
@@ -785,13 +965,13 @@
 
     <div class="controls">
         <button class="nav-btn" id="prevBtn" onclick="prevSlide()">← Back</button>
-        <div class="indicator" id="indicator">1 / 14</div>
+        <div class="indicator" id="indicator">1 / 16</div>
         <button class="nav-btn" id="nextBtn" onclick="nextSlide()">Next →</button>
     </div>
 
     <script>
         let currentSlide = 0;
-        const totalSlides = 14; // Đã hiệu chỉnh tổng số 14 slide khép kín
+        const totalSlides = 16; // Đã hiệu chỉnh tổng số 16 slide khép kín
         const slidesWrapper = document.getElementById('slidesWrapper');
         const slides = document.querySelectorAll('.slide');
         const indicator = document.getElementById('indicator');
