@@ -1,0 +1,58 @@
+# GapTutor Tool Contract - Explain and Summarize Tools
+# Đặc tả danh mục tham số gọi công cụ (Tool Calls) cho Explain và Summarize Tools.
+
+version: "1.2"
+contract_type: "agent_tools"
+
+tools:
+  explain:
+    description: "Giải thích nội dung khái niệm cho người dùng kèm ví dụ minh họa."
+    input_payload:
+      content:
+        type: string
+        required: true
+      retrieval:
+        type: function
+        description: "Hàm lấy dữ liệu từ nguồn học liệu."
+    output_payload:
+      explanation:
+        type: string
+        description: "Giải thích chi tiết về khái niệm hoặc nội dung đã cho."
+      example:
+        type: string
+        description: "Một ví dụ thực tế, cụ thể và dễ hiểu minh họa cho khái niệm."
+      citation:
+        type: string
+        description: "Thông tin nguồn trích dẫn cho nội dung đã giải thích."
+
+  summarize:
+    description: "Tóm tắt nội dung học tập theo cấu trúc giúp người học ôn tập nhanh."
+    input_payload:
+      content:
+        type: string
+        required: true
+      detail_level:
+        type: string
+        enum: ["brief", "detailed"]
+        required: false
+        description: "Mức độ chi tiết của tóm tắt (mặc định là brief)."
+      retrieval:
+        type: function
+        description: "Hàm lấy dữ liệu từ nguồn học liệu."
+    output_payload:
+      summary:
+        type: string
+        description: "Tóm tắt ngắn gọn, tổng quan về nội dung đã cho."
+      key_points:
+        type: array
+        items:
+          type: string
+        description: "Danh sách các ý chính cốt lõi rút ra từ nội dung."
+      keywords:
+        type: array
+        items:
+          type: string
+        description: "Các thuật ngữ, khái niệm quan trọng xuất hiện trong nội dung."
+      citation:
+        type: string
+        description: "Thông tin nguồn trích dẫn cho nội dung đã tóm tắt."
