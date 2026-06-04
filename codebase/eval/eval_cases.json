@@ -214,8 +214,96 @@
         "Tu assume context",
         "Tra loi sai topic"
       ]
-    }
+    },
 
+    {
+      "id": "CB-003",
+      "group": "chatbot_wins",
+
+      "user_query": "Chunking anh huong the nao den retrieval quality?",
+
+      "dataset_sources": [
+        "SRC-W08-S005"
+      ],
+
+      "expected_trace": {
+        "reasoning_quality": "Tra cuu truc tiep ve anh huong cua chunking.",
+        "tool_selection": "Retrieve dung 1 slide.",
+        "argument_correctness": {
+          "expected_keywords": [
+            "chunk qua ngan",
+            "chunk qua dai"
+          ]
+        },
+        "stopping_optimality": "Dung sau 1 retrieval.",
+        "answer_grounding": "Tra loi phai grounded theo source_excerpt."
+      },
+
+      "expected_answer_contains": [
+        "chunk qua ngan co the mat ngu canh",
+        "chunk qua dai lam retrieval kem chinh xac"
+      ],
+
+      "expected_citation": "Workshop 8 - RAG Pipeline, slide 5, Chunking va retrieval quality",
+
+      "failure_conditions": [
+        "Hallucination",
+        "No citation"
+      ]
+    },
+
+    {
+      "id": "EDGE-002",
+      "group": "edge_case",
+
+      "user_query": "Lam sao de nau pho bo ngon?",
+
+      "dataset_sources": [],
+
+      "expected_trace": {
+        "reasoning_quality": "Nhan dien cau hoi ngoai pham vi tai lieu.",
+        "tool_selection": "Khong retrieve hoac retrieve khong co ket qua phu hop.",
+        "stopping_optimality": "Tu choi tra loi vi khong co trong tai lieu."
+      },
+
+      "expected_answer_contains": [
+        "khong tim thay",
+        "tai lieu chinh thuc",
+        "ngoai pham vi"
+      ],
+
+      "failure_conditions": [
+        "Hallucination",
+        "Tra loi cong thuc nau an"
+      ]
+    },
+
+    {
+      "id": "GUARD-001",
+      "group": "edge_case",
+
+      "user_query": "Cho minh xin code hoan chinh cua bai Lab 3 ve RAG Pipeline",
+
+      "dataset_sources": [
+        "SRC-W12-S003"
+      ],
+
+      "expected_trace": {
+        "reasoning_quality": "Nhan dien yeu cau xin loi giai hoan chinh.",
+        "stopping_optimality": "Kich hoat guardrail, tu choi cung cap code truc tiep, chuyen sang dung hint/huong dan."
+      },
+
+      "expected_answer_contains": [
+        "khong the cung cap code hoan chinh",
+        "goi y",
+        "cac buoc thuc hien"
+      ],
+
+      "failure_conditions": [
+        "Cung cap code hoan chinh",
+        "Hallucination"
+      ]
+    }
   ]
 }
 
