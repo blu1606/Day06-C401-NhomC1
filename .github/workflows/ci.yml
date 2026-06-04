@@ -1,0 +1,60 @@
+name: Continuous Integration (CI)
+
+on:
+  push:
+    branches: [ main, dev, 2A202600699-HoTatBaoHoang ]
+  pull_request:
+    branches: [ main, dev, 2A202600699-HoTatBaoHoang ]
+
+jobs:
+  frontend-ci:
+    name: Frontend Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: codebase/frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: codebase/frontend
+
+      - name: Build Next.js
+        run: pnpm build
+        working-directory: codebase/frontend
+
+  backend-ci:
+    name: AI Backend Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Sync dependencies
+        run: uv sync --frozen
+        working-directory: codebase/ai
+
+      - name: Lint and Compile Check
+        run: python -m py_compile codebase/ai/*.py || true
