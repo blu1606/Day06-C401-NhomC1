@@ -118,7 +118,44 @@ def run_real_agent_flow(query: str, provider, provider_name: str) -> Optional[Ch
             "kind": "final",
             "content": result.final_answer,
         })
-        return ChatResponse(summary=result.final_answer, steps=steps)
+
+        # Extract slide pages from agent run steps
+        agent_slide_pages = []
+        for step in result.trace:
+            if step.parsed_kind == "action" and step.tool_name in ["search_slide_sources", "retrieve_lecture_context"]:
+                obs = step.observation
+                if isinstance(obs, str):
+                    try:
+                        obs = json.loads(obs)
+                    except Exception:
+                        pass
+                if isinstance(obs, dict):
+                    citations = obs.get("citations", [])
+                    for citation in citations:
+                        p_num = extract_slide_number(citation)
+                        if p_num is not None and p_num not in agent_slide_pages:
+                            agent_slide_pages.append(p_num)
+                    
+                    matched = obs.get("matched_slides", [])
+                    for m in matched:
+                        if isinstance(m, dict):
+                            s_id = m.get("source_id") or m.get("slide_no")
+                            if isinstance(s_id, int):
+                                if s_id not in agent_slide_pages:
+                                    agent_slide_pages.append(s_id)
+                            elif isinstance(s_id, str):
+                                p_num = extract_slide_number(s_id)
+                                if p_num is not None and p_num not in agent_slide_pages:
+                                    agent_slide_pages.append(p_num)
+
+        slide_page = agent_slide_pages[0] if agent_slide_pages else None
+
+        return ChatResponse(
+            summary=result.final_answer, 
+            steps=steps, 
+            slidePage=slide_page, 
+            slidePages=agent_slide_pages
+        )
     except Exception as e:
         print(f"[!] ReActAgent run failed: {e}. Falling back to mock RAG.")
         return None
