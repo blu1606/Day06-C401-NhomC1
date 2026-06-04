@@ -26,6 +26,8 @@ type BackendTraceStep = Omit<SimulatedStep, "status"> & {
 type DiagnoseResponse = {
   summary: string;
   steps?: BackendTraceStep[];
+  slidePage?: number;
+  slidePages?: number[];
 };
 
 const stepIcons = {
@@ -557,12 +559,46 @@ export function ChatPanelInteractive({
                 ...msg,
                 content: data.summary,
                 thinkingSteps: backendSteps,
+                slidePage: data.slidePage,
+                slidePages: data.slidePages,
                 isSimulating: false,
                 isOfflineFallback: false,
               }
             : msg
         )
       );
+
+      // Build and update Trace Telemetry tab
+      const newTrace: AgentTrace = {
+        id: `live-run-${Date.now()}`,
+        title: "Live API Agent Run",
+        query: userText,
+        status: "completed",
+        latencyMs: data.telemetry?.total_execution_time_ms ?? 0,
+        promptTokens: data.telemetry?.prompt_tokens ?? 0,
+        completionTokens: data.telemetry?.completion_tokens ?? 0,
+        costUsd: data.telemetry?.estimated_cost_usd ?? 0,
+        isFallbackTriggered: false,
+        summary: data.summary,
+        steps: backendSteps.map(step => ({
+          id: step.id,
+          title: step.title,
+          kind: step.kind as any,
+          content: step.content,
+          toolName: step.toolName,
+          status: step.status as any,
+          durationMs: step.durationMs,
+          input: step.input,
+          output: step.output,
+          errorCode: step.errorCode
+        })),
+        slidePage: data.slidePage,
+        slidePages: data.slidePages
+      };
+
+      if (onTraceUpdate) {
+        onTraceUpdate(newTrace);
+      }
     } catch {
       clearTimeout(timeoutId);
       setIsBackendConnected(false);

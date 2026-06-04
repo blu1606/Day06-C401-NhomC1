@@ -20,6 +20,7 @@ if str(AI_ROOT) not in sys.path:
 
 from tools.retrieval_function import retrieval
 from tools.summarize.tool import summarize, _is_lab_answer_request
+from tools.list_tools.tool import list_tools
 from agent import (
     AgentTraceLogger,
     ReActAgent,
@@ -53,15 +54,35 @@ class ChatRequest(BaseModel):
     query: str
     history: Optional[List[Dict[str, str]]] = None
 
+class TelemetryData(BaseModel):
+    total_execution_time_ms: int
+    prompt_tokens: int
+    completion_tokens: int
+    estimated_cost_usd: float
+
 class ChatResponse(BaseModel):
     summary: str
     steps: List[Dict[str, Any]]
+    slidePage: Optional[int] = None
+    slidePages: Optional[List[int]] = None
+    telemetry: Optional[TelemetryData] = None
 
-def run_real_agent_flow(query: str, provider, provider_name: str) -> Optional[ChatResponse]:
+def extract_slide_number(source_id: str) -> Optional[int]:
+    if not source_id:
+        return None
+    # Extract number from format like "DAY05-S030" or "S30"
+    match = re.search(r'S0*(\d+)', source_id)
+    return int(match.group(1)) if match else None
+
+def run_real_agent_flow(query: str, provider, provider_name: str, t_start: float) -> Optional[ChatResponse]:
     try:
+        current_dir = Path(__file__).resolve().parent
+        log_path = current_dir / "logs" / "agent_trace.jsonl"
+        
         agent = create_agent(
             llm=provider,
             max_steps=5,
+            trace_log_path=log_path,
             trace_metadata={"mode": "api", "provider": provider_name},
         )
         result = agent.answer(query)
@@ -109,7 +130,65 @@ def run_real_agent_flow(query: str, provider, provider_name: str) -> Optional[Ch
             "kind": "final",
             "content": result.final_answer,
         })
-        return ChatResponse(summary=result.final_answer, steps=steps)
+
+        # Extract slide pages and usage tokens from agent run steps
+        agent_slide_pages = []
+        total_prompt_tokens = 0
+        total_completion_tokens = 0
+        for step in result.trace:
+            if step.usage:
+                total_prompt_tokens += step.usage.get("prompt_tokens") or 0
+                total_completion_tokens += step.usage.get("completion_tokens") or 0
+
+            if step.parsed_kind == "action" and step.tool_name in ["search_slide_sources", "retrieve_lecture_context"]:
+                obs = step.observation
+                if isinstance(obs, str):
+                    try:
+                        obs = json.loads(obs)
+                    except Exception:
+                        pass
+                if isinstance(obs, dict):
+                    citations = obs.get("citations", [])
+                    for citation in citations:
+                        p_num = extract_slide_number(citation)
+                        if p_num is not None and p_num not in agent_slide_pages:
+                            agent_slide_pages.append(p_num)
+                    
+                    matched = obs.get("matched_slides", [])
+                    for m in matched:
+                        if isinstance(m, dict):
+                            s_id = m.get("source_id") or m.get("slide_no")
+                            if isinstance(s_id, int):
+                                if s_id not in agent_slide_pages:
+                                    agent_slide_pages.append(s_id)
+                            elif isinstance(s_id, str):
+                                p_num = extract_slide_number(s_id)
+                                if p_num is not None and p_num not in agent_slide_pages:
+                                    agent_slide_pages.append(p_num)
+
+        slide_page = agent_slide_pages[0] if agent_slide_pages else None
+        
+        # Estimate cost (standard rate: prompt $0.07/M, completion $0.21/M)
+        prompt_cost = (total_prompt_tokens / 1_000_000) * 0.07
+        completion_cost = (total_completion_tokens / 1_000_000) * 0.21
+        estimated_cost = prompt_cost + completion_cost
+        
+        duration_ms = int((time.time() - t_start) * 1000)
+        
+        telemetry = TelemetryData(
+            total_execution_time_ms=duration_ms,
+            prompt_tokens=total_prompt_tokens,
+            completion_tokens=total_completion_tokens,
+            estimated_cost_usd=estimated_cost
+        )
+
+        return ChatResponse(
+            summary=result.final_answer, 
+            steps=steps, 
+            slidePage=slide_page, 
+            slidePages=agent_slide_pages,
+            telemetry=telemetry
+        )
     except Exception as e:
         print(f"[!] ReActAgent run failed: {e}. Falling back to mock RAG.")
         return None
@@ -155,12 +234,19 @@ async def chat_endpoint(request: ChatRequest):
                 "content": refusal_content,
             }
         ]
-        return ChatResponse(summary=refusal_content, steps=steps)
+        duration_ms = int((time.time() - t_start) * 1000)
+        telemetry = TelemetryData(
+            total_execution_time_ms=duration_ms,
+            prompt_tokens=0,
+            completion_tokens=0,
+            estimated_cost_usd=0.0
+        )
+        return ChatResponse(summary=refusal_content, steps=steps, slidePage=30, slidePages=[30, 12], telemetry=telemetry)
     
     # 1.5 Try running real LLM ReActAgent if keys are configured
     llm_provider, provider_name = get_llm_provider()
     if llm_provider is not None:
-        real_response = run_real_agent_flow(query, llm_provider, provider_name)
+        real_response = run_real_agent_flow(query, llm_provider, provider_name, t_start)
         if real_response is not None:
             return real_response
     
@@ -206,7 +292,14 @@ async def chat_endpoint(request: ChatRequest):
                 "content": fallback_content,
             }
         ]
-        return ChatResponse(summary=fallback_content, steps=steps)
+        duration_ms = int((time.time() - t_start) * 1000)
+        telemetry = TelemetryData(
+            total_execution_time_ms=duration_ms,
+            prompt_tokens=0,
+            completion_tokens=0,
+            estimated_cost_usd=0.0
+        )
+        return ChatResponse(summary=fallback_content, steps=steps, telemetry=telemetry)
     
     # 4. Standard RAG flow: call summarize tool
     summary_result = summarize(query=query, retrieval=retrieval)
@@ -250,7 +343,22 @@ async def chat_endpoint(request: ChatRequest):
         }
     ]
     
-    return ChatResponse(summary=answer, steps=steps)
+    parsed_pages = []
+    for s_id in slide_pages:
+        p_num = extract_slide_number(s_id)
+        if p_num is not None and p_num not in parsed_pages:
+            parsed_pages.append(p_num)
+            
+    slide_page = parsed_pages[0] if parsed_pages else None
+    
+    telemetry = TelemetryData(
+        total_execution_time_ms=duration_ms,
+        prompt_tokens=0,
+        completion_tokens=0,
+        estimated_cost_usd=0.0
+    )
+    
+    return ChatResponse(summary=answer, steps=steps, slidePage=slide_page, slidePages=parsed_pages, telemetry=telemetry)
 
 @app.get("/api/v1/prompt-tools")
 async def prompt_tools_endpoint():
@@ -430,6 +538,14 @@ def default_slide_data_path() -> Path:
     repo_root = Path(__file__).resolve().parents[3]
     return repo_root / "02-group-spec" / "data" / "day05_ai_tutor_slide_sources.json"
 
+def make_list_tools_tool() -> Tool:
+    return Tool(
+        name="list_tools",
+        description="Lists the LMS AI Learning Assistant tools available in this local prototype.",
+        input_format="{}",
+        func=list_tools,
+    )
+
 def create_agent(
     llm,
     max_steps: int = 5,
@@ -438,7 +554,10 @@ def create_agent(
     trace_log_path: str | Path | None = None,
     trace_metadata: dict | None = None,
 ) -> ReActAgent:
-    tools = [make_slide_search_tool(data_path or default_slide_data_path())]
+    tools = [
+        make_slide_search_tool(data_path or default_slide_data_path()),
+        make_list_tools_tool(),
+    ]
     tools.extend(extra_tools or [])
     trace_logger = AgentTraceLogger(trace_log_path) if trace_log_path else None
     return ReActAgent(
