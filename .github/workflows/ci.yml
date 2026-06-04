@@ -53,7 +53,7 @@ jobs:
         run: uv python install 3.13
 
       - name: Sync dependencies
-        run: uv sync --frozen
+        run: uv sync
         working-directory: codebase/ai
 
       - name: Lint and Compile Check
