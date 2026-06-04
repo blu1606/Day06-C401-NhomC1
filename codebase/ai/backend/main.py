@@ -56,6 +56,15 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     summary: str
     steps: List[Dict[str, Any]]
+    slidePage: Optional[int] = None
+    slidePages: Optional[List[int]] = None
+
+def extract_slide_number(source_id: str) -> Optional[int]:
+    if not source_id:
+        return None
+    # Extract number from format like "DAY05-S030" or "S30"
+    match = re.search(r'S0*(\d+)', source_id)
+    return int(match.group(1)) if match else None
 
 def run_real_agent_flow(query: str, provider, provider_name: str) -> Optional[ChatResponse]:
     try:
@@ -109,7 +118,44 @@ def run_real_agent_flow(query: str, provider, provider_name: str) -> Optional[Ch
             "kind": "final",
             "content": result.final_answer,
         })
-        return ChatResponse(summary=result.final_answer, steps=steps)
+
+        # Extract slide pages from agent run steps
+        agent_slide_pages = []
+        for step in result.trace:
+            if step.parsed_kind == "action" and step.tool_name in ["search_slide_sources", "retrieve_lecture_context"]:
+                obs = step.observation
+                if isinstance(obs, str):
+                    try:
+                        obs = json.loads(obs)
+                    except Exception:
+                        pass
+                if isinstance(obs, dict):
+                    citations = obs.get("citations", [])
+                    for citation in citations:
+                        p_num = extract_slide_number(citation)
+                        if p_num is not None and p_num not in agent_slide_pages:
+                            agent_slide_pages.append(p_num)
+                    
+                    matched = obs.get("matched_slides", [])
+                    for m in matched:
+                        if isinstance(m, dict):
+                            s_id = m.get("source_id") or m.get("slide_no")
+                            if isinstance(s_id, int):
+                                if s_id not in agent_slide_pages:
+                                    agent_slide_pages.append(s_id)
+                            elif isinstance(s_id, str):
+                                p_num = extract_slide_number(s_id)
+                                if p_num is not None and p_num not in agent_slide_pages:
+                                    agent_slide_pages.append(p_num)
+
+        slide_page = agent_slide_pages[0] if agent_slide_pages else None
+
+        return ChatResponse(
+            summary=result.final_answer, 
+            steps=steps, 
+            slidePage=slide_page, 
+            slidePages=agent_slide_pages
+        )
     except Exception as e:
         print(f"[!] ReActAgent run failed: {e}. Falling back to mock RAG.")
         return None
@@ -155,7 +201,7 @@ async def chat_endpoint(request: ChatRequest):
                 "content": refusal_content,
             }
         ]
-        return ChatResponse(summary=refusal_content, steps=steps)
+        return ChatResponse(summary=refusal_content, steps=steps, slidePage=30, slidePages=[30, 12])
     
     # 1.5 Try running real LLM ReActAgent if keys are configured
     llm_provider, provider_name = get_llm_provider()
@@ -250,7 +296,15 @@ async def chat_endpoint(request: ChatRequest):
         }
     ]
     
-    return ChatResponse(summary=answer, steps=steps)
+    parsed_pages = []
+    for s_id in slide_pages:
+        p_num = extract_slide_number(s_id)
+        if p_num is not None and p_num not in parsed_pages:
+            parsed_pages.append(p_num)
+            
+    slide_page = parsed_pages[0] if parsed_pages else None
+    
+    return ChatResponse(summary=answer, steps=steps, slidePage=slide_page, slidePages=parsed_pages)
 
 @app.get("/api/v1/prompt-tools")
 async def prompt_tools_endpoint():
