@@ -1,0 +1,37 @@
+# GapTutor Tool Contract - Retrieval Tool
+# Đặc tả danh mục tham số gọi công cụ (Tool Calls) cho Retrieval Tool.
+
+version: "1.0"
+contract_type: "agent_tools"
+
+tools:
+  retrieve_sources:
+    description: "Truy xuất thông tin nguồn tài liệu cho AI Tutor."
+    input_payload:
+      cohort:
+        type: string
+        required: true
+      source_type:
+        type: string
+        required: false
+    output_payload:
+      sources:
+        type: array
+        items:
+          source_id: string
+          cohort: string
+          source_type: string
+          workshop_no: integer
+          workshop_title: string
+          slide_no: integer
+          section_title: string
+          created_by_role: string
+          status: string
+          language: string
+          skill_tags: array
+          content_type: string
+          learning_objective: string
+          summary: string
+          source_excerpt: string
+          citation_label: string
+          example_student_questions: array
