@@ -38,6 +38,7 @@ Quy tắc quan trọng:
 
 Các tool đã được đăng ký trong `codebase/ai/tools/__init__.py`:
 
+- `explain`
 - `summarize`
 - `retrieve_slide_sources`
 - `classify_question_scope`
@@ -507,7 +508,172 @@ SRC-W08-S005
 `_learning_assistant.py`. Danh sách này hiện chỉ gồm 7 LMS assistant tools,
 không gồm `summarize` và không gồm `lookup_tool_template`.
 
-## 8. summarize
+## 8. explain
+
+**Mục đích:** Giải thích một khái niệm/câu hỏi của học viên dựa trên source được
+retrieval trả về, có citation theo contract `explain_and_summarize_tool_contract.yaml`.
+
+**Vị trí:**
+
+- `codebase/ai/tools/explain/tool.py`
+- `codebase/ai/tools/explain/TOOL.md`
+
+**Input chính:**
+
+```python
+{
+    "content": str,
+    "retrieval": callable | dict | Any,
+}
+```
+
+**Output theo contract:**
+
+```python
+{
+    "explanation": str,
+    "citation": str,
+}
+```
+
+**Lưu ý về output `example`:**
+
+Contract YAML mô tả output có `explanation`, `example`, `citation`. Implementation
+hiện tại không trả `example` thành field riêng. Thay vào đó, ví dụ minh họa được
+ghép vào trong chuỗi `explanation` dưới heading:
+
+```text
+### Ví dụ minh họa
+```
+
+Vì vậy UI/caller hiện tại nên đọc ví dụ từ nội dung `explanation`, hoặc cần sửa
+implementation nếu muốn field `example` riêng đúng 100% với contract.
+
+**Cách nhận retrieval:**
+
+Tool hỗ trợ 3 dạng `retrieval`:
+
+1. Callable function:
+
+```python
+ret_result = retrieval(content)
+```
+
+2. Dict payload trực tiếp:
+
+```python
+{
+    "data": ...,
+    "citation": str,
+}
+```
+
+3. Giá trị bất kỳ khác:
+
+```python
+{
+    "data": retrieval,
+    "citation": "",
+}
+```
+
+**Dạng source mong đợi:**
+
+`data` có thể là list source hoặc một payload bất kỳ. Với list source dạng dict,
+tool format các field sau vào prompt:
+
+```python
+{
+    "section_title": str,
+    "summary": str,
+    "source_excerpt": str,
+    "citation_label": str,
+}
+```
+
+Nếu `citation` không được truyền ở payload gốc, tool sẽ nối các
+`citation_label` trong source list thành chuỗi citation.
+
+**Cách hoạt động khi có API key:**
+
+- Tool đọc `.env` từ repo root nếu file tồn tại.
+- Nếu có `OPENROUTER_API_KEY` hợp lệ, tool gọi OpenRouter qua OpenAI client.
+- Model hiện dùng: `google/gemma-4-31b-it:free`.
+- Prompt yêu cầu model chỉ trả lời dựa trên slide sources và output JSON với:
+  `explanation`, `simplified`, `example`.
+- Sau đó tool ghép thành một chuỗi markdown:
+
+```text
+### Diễn giải
+...
+
+### Đơn giản hóa
+...
+
+### Ví dụ minh họa
+...
+```
+
+**Fallback local/offline:**
+
+Nếu không có API key, API key không hợp lệ, hoặc API call lỗi, tool dùng fallback
+local:
+
+- Nếu `content` chứa `rag` hoặc `retrieval`, trả giải thích RAG cố định.
+- Nếu không, trả template chung:
+  `Giải thích chi tiết dựa trên slide cho câu hỏi: '{content}'.`
+
+**Trường hợp không có source:**
+
+Nếu `data` rỗng hoặc falsy, tool trả:
+
+```python
+{
+    "explanation": "Rất tiếc, câu hỏi của bạn nằm ngoài phạm vi tài liệu slides hiện có của workshop.",
+    "citation": "",
+}
+```
+
+**Ví dụ dùng với retrieval function:**
+
+```python
+def mock_retrieval(content: str) -> dict:
+    return {
+        "data": [
+            {
+                "source_id": "SRC-W08-S002",
+                "slide_no": 2,
+                "section_title": "RAG la gi",
+                "summary": "RAG giup AI tra loi dua tren tai lieu duoc truy xuat.",
+                "source_excerpt": "RAG = retrieve relevant context + generate grounded answer.",
+                "citation_label": "Workshop 8 - RAG Pipeline, slide 2, RAG la gi",
+            }
+        ],
+        "citation": "Workshop 8 - RAG Pipeline, slide 2, RAG la gi",
+    }
+
+explain("RAG là gì?", mock_retrieval)
+```
+
+Kỳ vọng:
+
+```python
+{
+    "explanation": "### Diễn giải\n...\n\n### Đơn giản hóa\n...\n\n### Ví dụ minh họa\n...",
+    "citation": "Workshop 8 - RAG Pipeline, slide 2, RAG la gi",
+}
+```
+
+**Khác biệt với `generate_grounded_answer`:**
+
+- `explain` tập trung giải thích sâu hơn, có phần đơn giản hóa và ví dụ trong
+  markdown.
+- `generate_grounded_answer` là template local ngắn hơn, output có field
+  `answer`, `example`, `citations` riêng.
+- `explain` có thể gọi LLM qua OpenRouter nếu có API key; `generate_grounded_answer`
+  hiện không gọi LLM.
+
+## 9. summarize
 
 **Mục đích:** Tóm tắt nội dung học tập theo contract explain/summarize.
 
@@ -557,7 +723,7 @@ không gồm `summarize` và không gồm `lookup_tool_template`.
   `02-group-spec/data/mock_ai_tutor_slide_sources.json`. Day 05 được hỗ trợ khi
   truyền retrieval function.
 
-## 9. lookup_tool_template
+## 10. lookup_tool_template
 
 **Mục đích:** Template cho tool search web qua Tavily.
 
@@ -648,6 +814,7 @@ Tests nằm tại:
 
 - `codebase/ai/tests/test_learning_assistant_tools.py`
 - `codebase/ai/tests/test_summarize_tool.py`
+- `codebase/ai/tools/explain/test_explain_tool.py`
 
 Lệnh chạy test:
 
@@ -669,3 +836,5 @@ Các nhóm behavior đã được test:
 - Feedback routing sang `no_action`, `mentor_review`, `add_to_golden_test`.
 - `list_workshop_sources` có đủ field để UI render.
 - Registry có đủ tool đã đăng ký.
+- `explain` có local test riêng để kiểm tra output có `explanation`,
+  `citation`, các heading markdown, và citation khớp retrieval.
