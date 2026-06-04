@@ -27,6 +27,7 @@ from agent import (
     Tool,
     make_slide_search_tool,
 )
+from providers.llm import get_llm_provider
 
 # ==========================================
 # 1. FastAPI Web Server Implementation
@@ -55,6 +56,63 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     summary: str
     steps: List[Dict[str, Any]]
+
+def run_real_agent_flow(query: str, provider, provider_name: str) -> Optional[ChatResponse]:
+    try:
+        agent = create_agent(
+            llm=provider,
+            max_steps=5,
+            trace_metadata={"mode": "api", "provider": provider_name},
+        )
+        result = agent.answer(query)
+        
+        steps = []
+        for step in result.trace:
+            if step.thought:
+                steps.append({
+                    "id": f"thought-{step.step_index}",
+                    "title": f"Thinking Step {step.step_index}",
+                    "kind": "thought",
+                    "content": step.thought,
+                })
+            if step.parsed_kind == "action" and step.tool_name:
+                output_val = step.observation
+                try:
+                    if isinstance(output_val, str):
+                        output_val = json.loads(output_val)
+                except Exception:
+                    pass
+                
+                steps.append({
+                    "id": f"tool-{step.step_index}",
+                    "title": f"Call Tool: {step.tool_name}",
+                    "kind": "tool",
+                    "toolName": step.tool_name,
+                    "status": "completed" if not step.error else "failed",
+                    "durationMs": int(step.elapsed_ms),
+                    "input": step.tool_args,
+                    "output": output_val,
+                    "content": f"Tool '{step.tool_name}' executed.",
+                })
+            if step.error and step.parsed_kind != "action":
+                steps.append({
+                    "id": f"error-{step.step_index}",
+                    "title": "Execution Error",
+                    "kind": "error",
+                    "content": step.error,
+                    "errorCode": "AGENT_ERROR",
+                })
+        
+        steps.append({
+            "id": "final-answer",
+            "title": "Final Answer",
+            "kind": "final",
+            "content": result.final_answer,
+        })
+        return ChatResponse(summary=result.final_answer, steps=steps)
+    except Exception as e:
+        print(f"[!] ReActAgent run failed: {e}. Falling back to mock RAG.")
+        return None
 
 @app.post("/api/v1/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
@@ -98,6 +156,13 @@ async def chat_endpoint(request: ChatRequest):
             }
         ]
         return ChatResponse(summary=refusal_content, steps=steps)
+    
+    # 1.5 Try running real LLM ReActAgent if keys are configured
+    llm_provider, provider_name = get_llm_provider()
+    if llm_provider is not None:
+        real_response = run_real_agent_flow(query, llm_provider, provider_name)
+        if real_response is not None:
+            return real_response
     
     # 2. Query Retrieval Tool
     retrieved = retrieval(content=query)
@@ -535,11 +600,18 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     args = _build_arg_parser().parse_args(list(argv or []))
     if args.interactive or args.question:
+        llm_provider, provider_name = get_llm_provider()
+        if llm_provider is None:
+            llm_provider = DemoSlideTutorLLMProvider()
+            provider_name = "Mock (DemoSlideTutorLLMProvider)"
+        
+        print(f"[*] Active LLM Provider: {provider_name}")
+        
         agent = create_agent(
-            llm=DemoSlideTutorLLMProvider(),
+            llm=llm_provider,
             max_steps=args.max_steps,
             trace_log_path=args.trace_log,
-            trace_metadata={"mode": "terminal-demo"},
+            trace_metadata={"mode": "terminal-demo", "provider": provider_name},
         )
         if args.question:
             result = run_single_question(agent=agent, question=args.question)

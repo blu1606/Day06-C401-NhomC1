@@ -499,7 +499,7 @@ export function ChatPanelInteractive({
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
       controller.abort();
-    }, 5000);
+    }, 45000); // 45 seconds to support real LLM agent ReAct loops
 
     try {
       const history = messages.slice(-10).map((message) => ({

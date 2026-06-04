@@ -569,7 +569,9 @@ Hãy sinh bước tiếp theo theo đúng định dạng ReAct.
             )
 
     @staticmethod
-    def _unpack_llm_response(response: str | LLMResponse) -> tuple[str, dict[str, Any] | None]:
+    def _unpack_llm_response(response: Any) -> tuple[str, dict[str, Any] | None]:
         if isinstance(response, LLMResponse):
             return response.text, response.usage
+        if hasattr(response, "text"):
+            return getattr(response, "text"), getattr(response, "usage", None)
         return str(response), None

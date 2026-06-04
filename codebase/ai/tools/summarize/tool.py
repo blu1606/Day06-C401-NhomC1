@@ -481,8 +481,8 @@ def _low_confidence_response(query: str) -> dict[str, Any]:
         "mode": "unknown",
         "confidence": "low",
         "summary": (
-            "Chua tim thay noi dung phu hop trong tai lieu chinh thuc. "
-            "Hay hoi cu the hon hoac chon workshop lien quan."
+            "Chưa tìm thấy nội dung phù hợp trong tài liệu chính thức. "
+            "Hãy hỏi cụ thể hơn hoặc chọn workshop liên quan."
         ),
         "key_points": [],
         "citations": [],
@@ -495,8 +495,8 @@ def _guardrail_response() -> dict[str, Any]:
         "tool": "summarize",
         "confidence": "low",
         "summary": (
-            "Tool summarize khong lam ho bai lab hoan chinh. "
-            "Hay gui chu de, slide, hoac phan ban dang ket de tool tom tat kien thuc lien quan."
+            "Tool summarize không làm hộ bài lab hoàn chỉnh. "
+            "Hãy gửi chủ đề, slide, hoặc phần bạn đang kẹt để tool tóm tắt kiến thức liên quan."
         ),
         "key_points": [],
         "citations": [],

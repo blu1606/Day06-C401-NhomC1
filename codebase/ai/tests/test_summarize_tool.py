@@ -36,7 +36,7 @@ class SummarizeToolTest(unittest.TestCase):
 
         self.assertEqual(result["confidence"], "low")
         self.assertEqual(result["citations"], [])
-        self.assertIn("khong lam ho", result["summary"])
+        self.assertIn("không làm hộ", result["summary"])
 
     def test_workshop_mode_returns_multiple_citations(self) -> None:
         result = summarize("Tom tat workshop 8")
