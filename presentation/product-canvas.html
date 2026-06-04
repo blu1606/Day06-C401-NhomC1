@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor LMS - Product Canvas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0b111e;
+            --card-bg: rgba(22, 30, 49, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.15);
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .presentation-container {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 85vh;
+            height: auto;
+            background: #111827;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .presentation-container::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .slide {
+            display: none;
+            opacity: 0;
+            padding: 35px 60px;
+            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+            background: transparent;
+            z-index: 2;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .slide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            animation: slideFadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .slide h1 {
+            font-size: 2.8em;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #ffffff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .slide h2 {
+            font-size: 2.1em;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .slide p {
+            font-size: 1.05em;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        .list-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+            list-style: none;
+        }
+
+        .list-cards li {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 15px 18px;
+            border-radius: 12px;
+            font-size: 1em;
+            line-height: 1.4;
+            color: var(--text-main);
+        }
+
+        .list-cards li strong {
+            color: var(--primary);
+            font-size: 1.3em;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .message-box {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+            border-left: 4px solid var(--primary);
+            padding: 14px 20px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .quote-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .quote {
+            font-size: 1em;
+            font-style: italic;
+            padding: 10px 18px;
+            background: rgba(239, 68, 68, 0.05);
+            border-left: 3px solid #ef4444;
+            border-radius: 0 8px 8px 0;
+            color: #f3f4f6;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 15px 0;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .grid-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 18px;
+            border-radius: 14px;
+        }
+
+        .grid-item h4 {
+            font-size: 1.15em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .member-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1em;
+        }
+
+        .member-id {
+            color: var(--primary);
+            font-size: 0.85em;
+            margin-top: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 60px;
+            background: #0d1321;
+            border-top: 1px solid var(--card-border);
+            z-index: 10;
+            margin-top: auto;
+        }
+
+        .nav-button {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            margin: 0 25px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .title-slide-content {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .title-slide-content h1 {
+            font-size: 3.5em;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #fff 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+        }
+
+        @keyframes slideFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title & Team Intro -->
+        <div class="slide active">
+            <div class="title-slide-content">
+                <h1>🎓 AI Tutor LMS</h1>
+                <p style="font-size: 1.3em; color: var(--primary); font-weight: 500; margin-bottom: 15px;">Learning Assistant — Track: Learning Web</p>
+                
+                <!-- Hiển thị đầy đủ danh sách 6 thành viên kèm MSUI -->
+                <div class="team-grid">
+                    <div class="member-card"><div class="member-name">Hồ Tất Bảo Hoàng</div><div class="member-id">2A202600699</div></div>
+                    <div class="member-card"><div class="member-name">Lê Đức Việt</div><div class="member-id">2A202600959</div></div>
+                    <div class="member-card"><div class="member-name">Nguyễn Vũ Trọng</div><div class="member-id">2A202600960</div></div>
+                    <div class="member-card"><div class="member-name">Nguyễn Phương Nam</div><div class="member-id">2A202600962</div></div>
+                    <div class="member-card"><div class="member-name">Bùi Văn Tuân</div><div class="member-id">2A202601006</div></div>
+                    <div class="member-card"><div class="member-name">Đào Tất Thắng</div><div class="member-id">2A202600540</div></div>
+                </div>
+
+                <div class="message-box" style="text-align: center; margin-top: 10px;">
+                    “Chúng em build một AI Tutor giúp học viên AI20K hỏi lại nội dung workshop/lab dựa trên slide có citation.”
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Problem / Pain Point -->
+        <div class="slide">
+            <h2>🚨 Problem / Pain Point</h2>
+            <p style="margin-bottom: 8px;">Bối cảnh khóa học AI thực chiến có tính thử thách cao:</p>
+            
+            <ul class="list-cards">
+                <li><strong>~500</strong> Học viên tham gia</li>
+                <li><strong>~167</strong> Teams cùng tăng tốc</li>
+                <li><strong>Nhiều</strong> Workshop / Lab / Gate phụ thuộc</li>
+                <li><strong>Quá tải</strong> Mentor không thể hỗ trợ liên tục</li>
+            </ul>
+
+            <h3 style="margin-top: 5px;">Quote Evidence thực tế:</h3>
+            <div class="quote-container">
+                <div class="quote">“Em không biết bắt đầu debug RAG pipeline từ đâu.”</div>
+                <div class="quote">“Team bị kẹt gate nhưng mentor chưa kịp xem.”</div>
+                <div class="quote">“Nhiều bạn hỏi lại cùng một lỗi về chunking/tool calling/deploy.”</div>
+            </div>
+            
+            <div class="message-box" style="margin-top: 10px;">
+                “Người học thường bị mất context sau workshop và không biết hỏi lại ở đâu.”
+            </div>
+        </div>
+
+        <!-- Slide 3: Evidence -->
+        <div class="slide">
+            <h2>💡 Evidence</h2>
+            <p><strong>Self-use Evidence:</strong> Bản thân đội ngũ phát triển cũng gặp khó khăn khi học lại các nội dung phức tạp:</p>
+            
+            <div class="grid-2" style="margin: 10px 0;">
+                <div class="grid-item">
+                    <h4 style="color: #ef4444;">Khi quên kiến thức cốt lõi:</h4>
+                    <p style="font-size: 0.95em; color: var(--text-muted); margin-top: 5px;">Dễ rơi vào bế tắc ở các phần: Chunking, Retrieval, Tool calling.</p>
+                </div>
+                <div class="grid-item">
+                    <h4>Quy trình bắt buộc hiện tại:</h4>
+                    <p style="font-size: 0.95em; color: var(--text-muted); margin-top: 5px;">Học viên phải chủ động tìm kiếm nhiều nơi, đọc lại slide thủ công hoặc xếp hàng đợi hỏi mentor.</p>
+                </div>
+            </div>
+
+            <p style="font-weight: 600; color: white; margin-top: 5px;">Hệ sinh thái nguồn dữ liệu phân tán cần khai thác:</p>
+            <div class="badge-container">
+                <div class="badge">LMS</div>
+                <div class="badge">Slide workshop</div>
+                <div class="badge">Discord / Chat mentor</div>
+                <div class="badge">Google Form survey</div>
+            </div>
+            
+            <div class="message-box">
+                “Pain xảy ra ngay cả với chính team build.”
+            </div>
+        </div>
+
+        <!-- Slide 4: Insight -->
+        <div class="slide">
+            <h2>🔍 Insight</h2>
+            <div class="grid-2" style="margin: 15px 0;">
+                <div class="grid-item" style="border-top: 3px solid var(--text-muted);">
+                    <h4>⚠️ Surface Problem</h4>
+                    <p style="font-size: 1.15em; color: white; margin-top: 8px; font-style: italic;">“Người học quên kiến thức.”</p>
+                </div>
+                <div class="grid-item" style="border-top: 3px solid var(--primary);">
+                    <h4>💎 Deeper Need</h4>
+                    <p style="font-size: 1em; margin-top: 5px; margin-bottom: 5px;">Học viên cần một cơ chế tin cậy để phục hồi ngữ cảnh nhanh chóng:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.95em; color: white;">
+                        <div>• Recall nhanh chóng</div>
+                        <div>• Grounded answer chuẩn xác</div>
+                        <div>• Citation để tạo lòng tin</div>
+                        <div>• Định vị slide đang học</div>
+                    </div>
+                </div>
+            </div>
+            <div class="message-box">
+                “User không chỉ cần chatbot trả lời — họ cần AI có căn cứ và giúp recover context.”
+            </div>
+        </div>
+
+        <!-- Slide 5: Opportunity Statement -->
+        <div class="slide">
+            <h2>🎯 Opportunity Statement</h2>
+            <p><strong>Năng lực cốt lõi mà hệ thống AI Tutor mang lại:</strong></p>
+            
+            <ul class="list-cards" style="margin: 12px 0;">
+                <li><strong>Retrieve</strong> Định vị chính xác trang slide</li>
+                <li><strong>Summarize</strong> Đóng gói cô đọng nội dung lời giảng</li>
+                <li><strong>Explain</strong> Tái diễn giải kiến thức trực quan, dễ hiểu</li>
+                <li><strong>Verify</strong> Cung cấp citation nguồn để đối chiếu</li>
+            </ul>
+
+            <div class="message-box" style="background: rgba(255,255,255,0.02); border-color: var(--accent); margin-top: 10px;">
+                <span style="color: var(--accent); font-weight: 700; font-size: 0.9em; display: block; margin-bottom: 4px;">ĐỊNH KHUNG GIÁ TRỊ (FORMAT):</span>
+                “For students learning AI workshops, AI augments knowledge recall and workshop navigation, by retrieving grounded answers from workshop slides.”
+            </div>
+            <p style="margin-top: 15px; font-weight: 600; color: #ffffff; text-align: center; font-size: 1em;">“Đây là bài toán augmentation, không phải fully autonomous AI.”</p>
+        </div>
+
+        <!-- Slide 6: Build Slice -->
+        <div class="slide">
+            <h2>🍰 Build Slice (Phạm vi hẹp đo lường được)</h2>
+            <div class="grid-2" style="margin: 10px 0;">
+                <div class="grid-item">
+                    <h4>👤 User</h4>
+                    <p style="font-size: 0.95em;">Sinh viên đang học phần kiến thức RAG Pipeline.</p>
+                </div>
+                <div class="grid-item">
+                    <h4>✏️ Task</h4>
+                    <p style="font-size: 0.95em; color: white; font-weight: 500;">“Chunking ảnh hưởng thế nào đến retrieval quality?”</p>
+                </div>
+                <div class="grid-item">
+                    <h4>🤖 AI Decision</h4>
+                    <p style="font-size: 0.95em;">Detect knowledge question $\rightarrow$ Tra cứu slide gốc $\rightarrow$ Bật chế độ Grounded explanation.</p>
+                </div>
+                <div class="grid-item">
+                    <h4>📤 Output</h4>
+                    <p style="font-size: 0.95em;">Câu trả lời ngắn + Ví dụ minh họa nhỏ + Nhãn Citation (Workshop, slide, đoạn trích dẫn).</p>
+                </div>
+            </div>
+            <div class="message-box">
+                “Chúng em không build cả LMS assistant — chỉ build một workflow AI hẹp nhưng measurable.”
+            </div>
+        </div>
+
+        <!-- Slide 7: Product Flow -->
+        <div class="slide">
+            <h2>🔄 Product Flow & Kiến trúc vận hành</h2>
+            
+            <div class="grid-4" style="margin: 15px 0;">
+                <div class="grid-item" style="text-align: center; padding: 12px;">
+                    <div style="font-size: 1.1em; font-weight: 700; margin-bottom: 4px;">1. Ask</div>
+                    <p style="font-size: 0.85em; color: var(--text-muted);">User đặt câu hỏi về nội dung buổi học</p>
+                </div>
+                <div class="grid-item" style="text-align: center; padding: 12px;">
+                    <div style="font-size: 1.1em; font-weight: 700; color: var(--primary); margin-bottom: 4px;">2. Retrieve</div>
+                    <p style="font-size: 0.85em; color: var(--text-muted);">AI kích hoạt tool truy xuất tài liệu gốc</p>
+                </div>
+                <div class="grid-item" style="text-align: center; padding: 12px;">
+                    <div style="font-size: 1.1em; font-weight: 700; color: var(--secondary); margin-bottom: 4px;">3. Generate</div>
+                    <p style="font-size: 0.85em; color: var(--text-muted);">Sinh câu trả lời có căn cứ xác thực</p>
+                </div>
+                <div class="grid-item" style="text-align: center; padding: 12px;">
+                    <div style="font-size: 1.1em; font-weight: 700; color: var(--accent); margin-bottom: 4px;">4. Verify</div>
+                    <p style="font-size: 0.85em; color: var(--text-muted);">Citation hiển thị số trang slide để đối chiếu</p>
+                </div>
+            </div>
+
+            <p style="font-size: 0.95em; color: var(--text-muted); text-align: center; margin-top: 10px;">Hệ thống tích hợp trực quan luồng dữ liệu thông qua sơ đồ **Architecture** đơn giản và **RAG flow diagram**.</p>
+
+            <div class="message-box" style="margin-top: 12px;">
+                “Trust đến từ retrieval + citation.”
+            </div>
+        </div>
+
+        <!-- Slide 8: Automation vs Augmentation -->
+        <div class="slide">
+            <h2>⚖️ Automation vs Augmentation (Ranh giới quyết định)</h2>
+            <div class="grid-2" style="margin: 15px 0;">
+                <div class="grid-item" style="border-left: 3px solid var(--primary);">
+                    <h4 style="color: var(--primary);">🤖 AI chủ động thực hiện</h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; font-size: 0.95em;">
+                        <div>• Trích xuất thông tin nền tảng (Retrieve)</div>
+                        <div>• Đóng gói kiến thức cô đọng (Summarize)</div>
+                        <div>• Diễn giải nội dung theo văn cảnh (Explain)</div>
+                        <div>• Trích dẫn nguồn tài liệu gốc (Cite source)</div>
+                    </div>
+                </div>
+                <div class="grid-item" style="border-left: 3px solid var(--secondary);">
+                    <h4 style="color: var(--secondary);">👤 Con người giữ quyền quản trị</h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; font-size: 0.95em;">
+                        <div>• Quyết định mức độ hiểu sâu kiến thức cuối cùng</div>
+                        <div>• Thẩm định và đối chiếu tính chính xác của nguồn dẫn</div>
+                        <div>• Tự lực tư duy và hoàn thành các bài Lab / Gate</div>
+                    </div>
+                </div>
+            </div>
+            <div class="message-box">
+                “AI hỗ trợ học, không làm hộ bài.”
+            </div>
+        </div>
+
+        <!-- Slide 9: Failure Mode & Mitigation -->
+        <div class="slide">
+            <h2>⚠️ Failure Mode & Chiến lược kiểm soát</h2>
+            
+            <div class="grid-2" style="margin: 10px 0;">
+                <div class="grid-item" style="border-left: 4px solid #ef4444;">
+                    <h4 style="color: #ef4444;">Rủi ro hệ thống nguy hiểm nhất:</h4>
+                    <p style="font-size: 1.1em; color: white; margin-top: 5px;">AI bị ảo tưởng kiến thức (Hallucinate) hoặc gắn nhãn trích dẫn sai trang slide.</p>
+                </div>
+                <div class="grid-item" style="border-left: 4px solid var(--secondary);">
+                    <h4>Cơ chế giảm thiểu (Mitigation):</h4>
+                    <div style="font-size: 0.9em; margin-top: 5px; line-height: 1.5; color: var(--text-main);">
+                        • Ràng buộc nghiêm ngặt chỉ trả lời từ Dataset gốc<br>
+                        • Kích hoạt chế độ Refusal (Từ chối) nếu thiếu nguồn tin<br>
+                        • Bắt buộc hiển thị trực quan Citation làm bằng chứng<br>
+                        • Làm rõ ngữ cảnh khi độ tự tin thấp (Low-confidence)
+                    </div>
+                </div>
+            </div>
+
+            <p style="font-weight: 600; color: white; font-size: 0.95em; margin-top: 5px;">Phản hồi mẫu an toàn (Example): <span style="font-style: italic; font-weight: 400; color: var(--text-muted);">“Không tìm thấy thông tin này trong workshop.”</span></p>
+
+            <div class="message-box" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.03); margin-top: 10px;">
+                “Trust quan trọng hơn trả lời mọi thứ.”
+            </div>
+        </div>
+
+        <!-- Slide 10: Closing -->
+        <div class="slide">
+            <div class="title-slide-content">
+                <h1 style="font-size: 3.2em; margin-bottom: 15px; background: linear-gradient(135deg, #fff 0%, #10b981 100%); -webkit-background-clip: text;">🎬 Final Message</h1>
+                <h2 style="font-size: 1.9em; line-height: 1.5; color: white; font-weight: 600; margin-bottom: 25px;">
+                    “AI Tutor sinh ra không phải để thay thế Mentor.<br>
+                    Nó đồng hành giúp học viên phục hồi ngữ cảnh nhanh hơn,<br>
+                    giảm tải khối lượng hỗ trợ vận hành của Mentor,<br>
+                    và học tập có căn cứ khoa học nhờ grounded citation thay vì hoang tưởng dữ liệu.”
+                </h2>
+                <div class="message-box" style="text-align: center; font-size: 1.3em; width: fit-content; margin: 0 auto; padding: 10px 35px;">
+                    Thank you for listening! 🙏
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Quay lại</button>
+            <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">10</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Tiếp theo →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 10; // Đã cấu hình tổng số 10 slide hoàn chỉnh theo file .md
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            
+            if (n > totalSlides) currentSlide = totalSlides;
+            if (n < 1) currentSlide = 1;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide - 1].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('progressFill').style.width = (currentSlide / totalSlides * 100) + '%';
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
