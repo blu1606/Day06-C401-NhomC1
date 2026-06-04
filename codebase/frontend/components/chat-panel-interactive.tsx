@@ -506,7 +506,7 @@ export function ChatPanelInteractive({
         role: message.role,
         content: message.content,
       }));
-      const response = await fetch("/api/diagnose", {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,

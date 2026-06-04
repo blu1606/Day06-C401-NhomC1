@@ -58,10 +58,12 @@ def retrieval(content: str) -> dict:
         }
 
     # 2. Chuẩn hóa truy vấn tìm kiếm và lọc stopword
+    import re
     query_normalized = remove_diacritics(content).lower().strip()
+    query_clean = re.sub(r'[^\w\s]', ' ', query_normalized)
     stopwords = {"la", "gi", "khong", "co", "va", "cua", "cho", "de", "trong", "mot", "nay", "voi", "den", "nao", "the", "lam", "ho", "ai", "em", "vi", "sao", "ve", "cac", "nhung", "thi"}
     query_tokens = [
-        token for token in query_normalized.split() 
+        token for token in query_clean.split() 
         if len(token) >= 2 and token not in stopwords
     ]
 
@@ -121,8 +123,27 @@ def retrieval(content: str) -> dict:
 
         # Cập nhật kết quả tốt nhất
         if score > best_score:
-            best_score = score
-            best_record = record
+            # Kiểm tra số lượng token thực sự khớp để tránh bẫy trùng 1 token yếu (như "trinh" trong "chương trình")
+            matched_count = 0
+            for token in query_tokens:
+                if (any(token in tag for tag in skill_tags) or 
+                    token in section_title or 
+                    any(token in q for q in example_student_questions) or 
+                    token in summary or 
+                    token in source_excerpt or 
+                    token in learning_objective):
+                    matched_count += 1
+            
+            # Nếu truy vấn có từ 2 token thực trở lên nhưng chỉ khớp dưới 2 token và không chứa từ khóa mạnh
+            if len(query_tokens) >= 2 and matched_count < 2:
+                strong_terms = {"rag", "chunking", "vibe"}
+                has_strong_term = any(token in strong_terms for token in query_tokens)
+                if not has_strong_term:
+                    score = 0 # Không cho phép khớp
+
+            if score > best_score:
+                best_score = score
+                best_record = record
 
     # 3. Trả về kết quả
     if best_record and best_score >= 30:
